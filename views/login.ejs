@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= title %></title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+  </head>
+  <body>
+    <h1><%= title %></h1>
+    <div>
+      <form action="/login" method="post">
+        <input type="hidden" name="url" id="url" value="<%= redirectUrl %>" />
+        <p>
+          <label>Username:</label>
+          <input type="text" name="user[id]" id="user[id]" />
+        </p>
+        <p>
+          <label>Password:</label>
+          <input type="text" name="user[pass]" id="user[pass}" />
+        </p>
+        <p>
+          <input type="submit" value="login" />
+        </p>
+      </form>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,27 @@
+{
+  "name": "file-share",
+  "description": "File sharing server that supports access permission",
+  "version": "0.0.1",
+  "author": "Sigel <entireboy@daum.net>",
+  "maintainers": "Sigel <entireboy@daum.net>",
+  "private": true,
+  "scripts": {
+    "start": "node app"
+  },
+  "dependencies": {
+    "express": "3.0.1",
+    "ejs": "0.8.3",
+    "less-middleware": "0.1.8",
+    "connect-mongodb": "1.1.5",
+    "mongodb": "1.x",
+    "config": "0.4.17"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/entireboy/file-share.git"
+  },
+  "keywords": [
+    "file share",
+    "sharing"
+  ]
+}
