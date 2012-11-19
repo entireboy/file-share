@@ -1,4 +1,6 @@
-var DEFAULT_COLLECTION_NAME = 'user';
+var COLLECTION_NAME = 'user';
+
+var mongo = require('./common/mongo');
 
 
 
@@ -32,24 +34,9 @@ exports.login.logout = function(req, res) {
   });
 };
 
-/**
- * Fetch the MongoDB collection
- * 
- * @param {String} [collecitonName] colleciton name to fetch. If does not specified, #DEFAULT_COLLECTION_NAME will be used.
- * @param {Function} callback returns fetched MongoDB colleciton
- */
-function fetchCollection(collectionName, callback) {
-  if('function' === typeof(collectionName)) callback = collectionName, collectionName = DEFAULT_COLLECTION_NAME;
-  if(null === collectionName) collectionName = DEFAULT_COLLECTION_NAME;
-  
-  require.main.db.fileShare.collection(collectionName, function(err, collection) {
-    if(err) callback(err, null);
-    else callback(null, collection);
-  });
-}
 
 function authenticate(id, pass, callback) {
-  fetchCollection(function(err, collection) {
+  mongo.fetchCollection('user', function(err, collection) {
     collection.findOne({id:id, password:pass}, function(err, cursor) {
       if(err) return callback(err);
       

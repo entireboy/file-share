@@ -9,3 +9,4 @@ exports.index = function(req, res){
 
 
 exports.user = require('./user');
+exports.file = require('./file');

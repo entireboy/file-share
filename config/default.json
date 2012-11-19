@@ -17,5 +17,12 @@
   		// max age 30 mins
   		"maxAge": 1800000
   	}
+  },
+  
+  // If you want to use relative path, do not start with slash('/')
+  "fileServer": {
+    "upload": {
+      "path": "test/upload"
+    }
   }
 }
