@@ -11,7 +11,7 @@ var CONFIG = require('config');
 exports.download = function(req, res) {
   var fileId = req.params.fileId;
   mongo.fetchCollection(COLLECTION_NAME, function(err, collection) {
-    collection.findOne({_id:fileId}, function(err, doc) {
+    collection.findOne({_id: fileId}, function(err, doc) {
       if(err || null === doc) {
         res.json(error.CANNOT_FIND_FILE_INFO);
         return;
@@ -33,7 +33,7 @@ exports.download = function(req, res) {
 exports.info = function(req, res) {
   var fileId = req.params.fileId;
   mongo.fetchCollection(COLLECTION_NAME, function(err, collection) {
-    collection.findOne({_id:fileId}, function(err, doc) {
+    collection.findOne({_id: fileId}, function(err, doc) {
       if(err || null === doc) {
         res.json(error.CANNOT_FIND_FILE_INFO);
         return;
