@@ -4,8 +4,8 @@ var CONFIG = require('config');
 
 var datas = [
   {collection: 'file', index: {'user.own': 1}}
-  , {collection: 'file', index: {'user.views': 1}}
   , {collection: 'file', index: {'user.edits': 1}}
+  , {collection: 'file', index: {'user.views': 1}}
 ];
 
 
