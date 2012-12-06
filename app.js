@@ -90,7 +90,7 @@ function checkPermission(req, res, next) {
     next();
   } else {
     req.session.error = 'Login required!';
-    res.redirect('/login?url=' + req.originalUrl);
+    res.redirect('/login' + routes.user.login.makeRedirectUrl(req.originalUrl));
   }
 }
 

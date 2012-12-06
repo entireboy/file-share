@@ -84,7 +84,7 @@ exports.login.login = function(req, res) {
       });
     } else {
         req.session.message = error.AUTHENTICATION_FAIL.dmessage;
-        res.redirect('login');
+        res.redirect('login' + makeRedirectUrl(req.body.url));
     }
   });
 };
@@ -95,8 +95,13 @@ exports.login.logout = function(req, res) {
   });
 };
 
+var makeRedirectUrl = exports.login.makeRedirectUrl = function(redirectUrl) {
+  if(!redirectUrl || '' === redirectUrl) return '';
+  else return '?url=' + redirectUrl;
+};
 
-function authenticate(id, pass, callback) {
+
+var authenticate = function (id, pass, callback) {
   mongo.fetchCollection(USER_COLLECTION, function(err, collection) {
     collection.findOne({_id: id, password: pass}, function(err, cursor) {
       if(err) return callback(err);
