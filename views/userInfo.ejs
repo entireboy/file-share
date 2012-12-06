@@ -13,34 +13,49 @@
       <div class="fileList">
         <h2>Own files</h2>
         <% if(file.owns && 0 < file.owns.length) { %>
-          <% file.owns.forEach(function(own) { %>
-            <div class="fileListBody">
-              <h3><a href="/file/<%= own.id %>"><%= own.name %></a></h3>
-              <%= own.uploaded %>
-            </div>
+          <% file.owns.forEach(function(own, i) { %>
+            <% if(file.listCount != i) { %>
+              <div class="fileListBody">
+                <h3><a href="/file/<%= own.id %>"><%= own.name %></a></h3>
+                <%= own.uploaded %>
+              </div>
+            <% } %>
           <% }) %>
+          <% if(file.listCount < file.owns.length) { %>
+            <div><a href="">more</a></div>
+          <% } %>
         <% } %>
       </div>
       <div class="fileList">
         <h2>Shared files (editable)</h2>
         <% if(file.edits && 0 < file.edits.length) { %>
-          <% file.edits.forEach(function(edit) { %>
-            <div class="fileListBody">
-              <h3><a href="/file/<%= edit.id %>"><%= edit.name %></a></h3>
-              <%= edit.uploaded %>
-            </div>
+          <% file.edits.forEach(function(edit, i) { %>
+            <% if(file.listCount != i) { %>
+              <div class="fileListBody">
+                <h3><a href="/file/<%= edit.id %>"><%= edit.name %></a></h3>
+                <%= edit.uploaded %>
+              </div>
+            <% } %>
           <% }) %>
+          <% if(file.listCount < file.edits.length) { %>
+            <div><a href="">more</a></div>
+          <% } %>
         <% } %>
       </div>
       <div class="fileList">
         <h2>Shared files (viewable)</h2>
         <% if(file.views && 0 < file.views.length) { %>
-          <% file.views.forEach(function(view) { %>
-            <div class="fileListBody">
-              <h3><a href="/file/<%= view.id %>"><%= view.name %></a></h3>
-              <%= view.uploaded %>
-            </div>
+          <% file.views.forEach(function(view, i) { %>
+            <% if(file.listCount != i) { %>
+              <div class="fileListBody">
+                <h3><a href="/file/<%= view.id %>"><%= view.name %></a></h3>
+                <%= view.uploaded %>
+              </div>
+            <% } %>
           <% }) %>
+          <% if(file.listCount < file.views.length) { %>
+            <div><a href="">more</a></div>
+          <% } %>
         <% } %>
       </div>
     </div>

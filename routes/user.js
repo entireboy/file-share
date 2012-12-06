@@ -1,10 +1,10 @@
 var USER_COLLECTION = 'user';
 var FILE_COLLECTION = 'file';
 
+var dateFormat = require('./common/dateFormat');
 var mongo = require('./common/mongo');
 var error = require('./common/error');
-
-require('date-utils');
+var CONFIG = require('config');
 
 
 // ================================================
@@ -26,15 +26,16 @@ exports.info = function(req, res) {
       result.user.id = user._id;
       result.user.name = user.name;
       result.file = {};
+      result.file.listCount = CONFIG.server.file.listCount.userInfo;
       result.file.owns = [];
       result.file.edits = [];
       result.file.views = [];
 
       mongo.fetchCollection(FILE_COLLECTION, function(err, collection) {
-        var totalFileTypeCount = Object.keys(result.file).length;
+        var totalFileTypeCount = 3; // owns, edits, views
         var retrievedFileTypeCount = 0;
         var retrieveFiles = function(fileType, query) {
-          collection.find(query, {limit: 5}).toArray(function(err, docs) {
+          collection.find(query).limit(CONFIG.server.file.listCount.userInfo + 1).sort({'file.time':-1}).toArray(function(err, docs) {
             if(err || null === docs) {
               res.json(error.CANNOT_FIND_FILE_INFO);
               return;
@@ -43,7 +44,7 @@ exports.info = function(req, res) {
               result.file[fileType].push({
                 id: doc._id
                 , name: doc.file.name
-                , uploaded: toDateFormat(doc.file.time)
+                , uploaded: dateFormat.toDateTime(doc.file.time)
               });
             });
             retrievedFileTypeCount++;
@@ -117,9 +118,3 @@ var authenticate = function (id, pass, callback) {
     });
   });
 }
-
-
-
-var toDateFormat = function (date) {
-  return date.toFormat('YYYY-MM-DD HH24:MI:SS') + ' +' + date.getUTCOffset();
-};

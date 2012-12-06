@@ -63,6 +63,9 @@ app.post('/login', routes.user.login.login);
 app.all('/logout', routes.user.login.logout);
 
 app.get('/user/:userId', routes.user.info);
+app.get('/user/:userId/file/owns', routes.user.info);
+app.get('/user/:userId/file/edits', routes.user.info);
+app.get('/user/:userId/file/views', routes.user.info);
 //app.get('/users', routes.user.list);
 
 app.get('/file/:fileId', checkPermission, routes.file.download);
