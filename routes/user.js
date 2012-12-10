@@ -1,9 +1,8 @@
 var USER_COLLECTION = 'user';
-var FILE_COLLECTION = 'file';
 
-var dateFormat = require('./common/dateFormat');
 var mongo = require('./common/mongo');
 var error = require('./common/error');
+var file = require('./file');
 var CONFIG = require('config');
 
 
@@ -31,34 +30,8 @@ exports.info = function(req, res) {
       result.file.edits = [];
       result.file.views = [];
 
-      mongo.fetchCollection(FILE_COLLECTION, function(err, collection) {
-        var totalFileTypeCount = 3; // owns, edits, views
-        var retrievedFileTypeCount = 0;
-        var retrieveFiles = function(fileType, query) {
-          collection.find(query).limit(CONFIG.server.file.listCount.userInfo + 1).sort({'file.time':-1}).toArray(function(err, docs) {
-            if(err || null === docs) {
-              res.json(error.CANNOT_FIND_FILE_INFO);
-              return;
-            }
-            docs.forEach(function(doc, i) {
-              result.file[fileType].push({
-                id: doc._id
-                , name: doc.file.name
-                , uploaded: dateFormat.toDateTime(doc.file.time)
-              });
-            });
-            retrievedFileTypeCount++;
-            if(retrievedFileTypeCount == totalFileTypeCount) res.render('userInfo', result);
-          });
-        };
-
-        // 1. retrieve own files
-        retrieveFiles('owns', {'user.own': user._id});
-        // 2. retrieve editable files
-        retrieveFiles('edits', {'user.edits': user._id});
-        // 3. retrieve viewable files
-        retrieveFiles('views', {'user.views': user._id});
-      });
+      // 사용자가 권한을 가지고 있는 파일 목록을 구해서 반환한다.
+      file.list.ofUser(req, res, result);
     });
   });
 };

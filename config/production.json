@@ -1,10 +1,14 @@
 {
-  // If you want to use relative path, do not start with slash('/')
-  "server": {
-    "file": {
-      "upload": {
-        "path": "upload"
-    }
-    }
-  }
+	// If you want to use relative path, do not start with slash('/')
+	"server": {
+		"file": {
+			"upload": {
+				"path": "upload"
+			},
+			"listCount": {
+				"userInfo": 5,
+				"userFile": 30
+			}
+		}
+	}
 }

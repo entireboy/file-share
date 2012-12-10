@@ -63,9 +63,9 @@ app.post('/login', routes.user.login.login);
 app.all('/logout', routes.user.login.logout);
 
 app.get('/user/:userId', routes.user.info);
-app.get('/user/:userId/file/owns', routes.user.info);
-app.get('/user/:userId/file/edits', routes.user.info);
-app.get('/user/:userId/file/views', routes.user.info);
+app.get('/user/:userId/file/owns', routes.file.list.ofUser.owns);
+app.get('/user/:userId/file/edits', routes.file.list.ofUser.edits);
+app.get('/user/:userId/file/views', routes.file.list.ofUser.views);
 //app.get('/users', routes.user.list);
 
 app.get('/file/:fileId', checkPermission, routes.file.download);

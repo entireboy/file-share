@@ -16,3 +16,4 @@ npm-debug.log
 .settings
 .c9revisions
 .DS_Store
+*.sublime-workspace

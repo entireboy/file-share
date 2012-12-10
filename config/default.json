@@ -1,34 +1,34 @@
 {
-  "mongodb": {
-    "host": "localhost",
-    "port": 27017,
-    "username": "",
-    "password": "",
-    "poolSize": 5,
-    "autoReconnect": true,
-    "database": "file-share"
-  },
-  "secure": {
-  	"session": {
-  		"secret": "top secret"
-  	},
-  	"cookie": {
-  		"secret": "top secret too",
-  		// max age 30 mins
-  		"maxAge": 1800000
-  	}
-  },
-  
-  // If you want to use relative path, do not start with slash('/')
-  "server": {
-    "file": {
-      "upload": {
-        "path": "test/upload"
-      },
-      "listCount": {
-        "userInfo": 5,
-        "userFile": 30
-      }
-    }
-  }
+	"mongodb": {
+		"host": "localhost",
+		"port": 27017,
+		"username": "",
+		"password": "",
+		"poolSize": 5,
+		"autoReconnect": true,
+		"database": "file-share"
+	},
+	"secure": {
+		"session": {
+			"secret": "top secret"
+		},
+		"cookie": {
+			"secret": "top secret too",
+			// max age 30 mins
+			"maxAge": 1800000
+		}
+	},
+	
+	// If you want to use relative path, do not start with slash('/')
+	"server": {
+		"file": {
+			"upload": {
+				"path": "test/upload"
+			},
+			"listCount": {
+				"userInfo": 1,
+				"userFile": 30
+			}
+		}
+	}
 }

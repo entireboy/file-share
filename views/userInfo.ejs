@@ -11,7 +11,7 @@
     </div>
     <div class="fileInfo">
       <div class="fileList">
-        <h2>Own files</h2>
+        <h2>Own Files</h2>
         <% if(file.owns && 0 < file.owns.length) { %>
           <% file.owns.forEach(function(own, i) { %>
             <% if(file.listCount != i) { %>
@@ -22,12 +22,12 @@
             <% } %>
           <% }) %>
           <% if(file.listCount < file.owns.length) { %>
-            <div><a href="">more</a></div>
+            <div><a href="/user/<%= user.id %>/file/owns">more</a></div>
           <% } %>
         <% } %>
       </div>
       <div class="fileList">
-        <h2>Shared files (editable)</h2>
+        <h2>Shared Files (Editable)</h2>
         <% if(file.edits && 0 < file.edits.length) { %>
           <% file.edits.forEach(function(edit, i) { %>
             <% if(file.listCount != i) { %>
@@ -38,12 +38,12 @@
             <% } %>
           <% }) %>
           <% if(file.listCount < file.edits.length) { %>
-            <div><a href="">more</a></div>
+            <div><a href="/user/<%= user.id %>/file/edits">more</a></div>
           <% } %>
         <% } %>
       </div>
       <div class="fileList">
-        <h2>Shared files (viewable)</h2>
+        <h2>Shared Files (Viewable)</h2>
         <% if(file.views && 0 < file.views.length) { %>
           <% file.views.forEach(function(view, i) { %>
             <% if(file.listCount != i) { %>
@@ -54,7 +54,7 @@
             <% } %>
           <% }) %>
           <% if(file.listCount < file.views.length) { %>
-            <div><a href="">more</a></div>
+            <div><a href="/user/<%= user.id %>/file/views">more</a></div>
           <% } %>
         <% } %>
       </div>
