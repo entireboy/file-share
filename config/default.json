@@ -25,9 +25,9 @@
 			"upload": {
 				"path": "test/upload"
 			},
-			"listCount": {
+			"listSize": {
 				"userInfo": 1,
-				"userFile": 30
+				"userFile": 1
 			}
 		}
 	}

@@ -66,7 +66,7 @@ exports.list.ofUser = function(req, res, result) {
     var totalFileTypeCount = 3; // owns, edits, views
     var retrievedFileTypeCount = 0;
     var retrieveFiles = function(opts) {
-      collection.find(opts.query).limit(CONFIG.server.file.listCount.userInfo + 1).sort({'file.time':-1}).toArray(function(err, docs) {
+      collection.find(opts.query).limit(CONFIG.server.file.listSize.userInfo + 1).sort({'file.time':-1}).toArray(function(err, docs) {
         if(err || null === docs) {
           res.json(error.CANNOT_FIND_FILE_INFO);
           return;
@@ -127,6 +127,9 @@ exports.list.ofUser.views = function(req, res) {
 
 var retrieveFilesOfUser = function(req, res, opts) {
   var userId = req.params.userId;
+  var page = req.query.page;
+  if(!page || page < 1) page = 1;
+  var listSize = CONFIG.server.file.listSize.userFile;
   var result = {};
   result.title = {};
   result.title.page = opts.title;
@@ -135,11 +138,12 @@ var retrieveFilesOfUser = function(req, res, opts) {
   result.user.id = userId;
   result.file = {};
   result.file.type = opts.fileType;
-  result.file.listCount = CONFIG.server.file.listCount.userFile;
+  result.file.page = page;
+  result.file.listSize = listSize;
   result.file[opts.fileType] = [];
 
   mongo.fetchCollection(FILE_COLLECTION, function(err, collection) {
-    collection.find(opts.query).limit(CONFIG.server.file.listCount.userFile + 1).sort({'file.time':-1}).toArray(function(err, docs) {
+    collection.find(opts.query).skip((page - 1) * listSize).limit(listSize + 1).sort({'file.time':-1}).toArray(function(err, docs) {
       if(err || null === docs) {
         res.json(error.CANNOT_FIND_FILE_INFO);
         return;

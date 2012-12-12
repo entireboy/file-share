@@ -14,14 +14,14 @@
         <h2>Own Files</h2>
         <% if(file.owns && 0 < file.owns.length) { %>
           <% file.owns.forEach(function(own, i) { %>
-            <% if(file.listCount != i) { %>
+            <% if(file.listSize != i) { %>
               <div class="fileListBody">
                 <h3><a href="/file/<%= own.id %>"><%= own.name %></a></h3>
                 <%= own.uploaded %>
               </div>
             <% } %>
           <% }) %>
-          <% if(file.listCount < file.owns.length) { %>
+          <% if(file.listSize < file.owns.length) { %>
             <div><a href="/user/<%= user.id %>/file/owns">more</a></div>
           <% } %>
         <% } %>
@@ -30,14 +30,14 @@
         <h2>Shared Files (Editable)</h2>
         <% if(file.edits && 0 < file.edits.length) { %>
           <% file.edits.forEach(function(edit, i) { %>
-            <% if(file.listCount != i) { %>
+            <% if(file.listSize != i) { %>
               <div class="fileListBody">
                 <h3><a href="/file/<%= edit.id %>"><%= edit.name %></a></h3>
                 <%= edit.uploaded %>
               </div>
             <% } %>
           <% }) %>
-          <% if(file.listCount < file.edits.length) { %>
+          <% if(file.listSize < file.edits.length) { %>
             <div><a href="/user/<%= user.id %>/file/edits">more</a></div>
           <% } %>
         <% } %>
@@ -46,14 +46,14 @@
         <h2>Shared Files (Viewable)</h2>
         <% if(file.views && 0 < file.views.length) { %>
           <% file.views.forEach(function(view, i) { %>
-            <% if(file.listCount != i) { %>
+            <% if(file.listSize != i) { %>
               <div class="fileListBody">
                 <h3><a href="/file/<%= view.id %>"><%= view.name %></a></h3>
                 <%= view.uploaded %>
               </div>
             <% } %>
           <% }) %>
-          <% if(file.listCount < file.views.length) { %>
+          <% if(file.listSize < file.views.length) { %>
             <div><a href="/user/<%= user.id %>/file/views">more</a></div>
           <% } %>
         <% } %>

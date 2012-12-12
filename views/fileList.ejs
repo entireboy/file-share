@@ -13,16 +13,19 @@
         <h2><%= title.fileList %></h2>
         <% if(file[file.type] && 0 < file[file.type].length) { %>
           <% file[file.type].forEach(function(f, i) { %>
-            <% if(file.listCount != i) { %>
+            <% if(file.listSize != i) { %>
               <div class="fileListBody">
                 <h3><a href="/file/<%= f.id %>"><%= f.name %></a></h3>
                 <%= f.uploaded %>
               </div>
             <% } %>
           <% }) %>
-          <% if(file.listCount < file[file.type].length) { %>
-            <div><a href="">more</a></div>
-          <% } %>
+          <div>
+            <a href="/user/<%= user.id %>/file/<%= file.type %>">first</a>
+            <% if(file.listSize < file[file.type].length) { %>
+              <a href="/user/<%= user.id %>/file/<%= file.type %>?page=<%= file.page + 1 %>">more</a>
+            <% } %>
+          </div>
         <% } %>
       </div>
     </div>

@@ -5,7 +5,7 @@
 			"upload": {
 				"path": "upload"
 			},
-			"listCount": {
+			"listSize": {
 				"userInfo": 5,
 				"userFile": 30
 			}
