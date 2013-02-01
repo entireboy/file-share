@@ -111,7 +111,7 @@ exports.list.ofUser.edits = function(req, res) {
     res, {
       title: 'Shared file list (editable) of ' + req.params.userId,
       fileListTitle: 'Shared Files (Editable)',
-      fileType: 'owns',
+      fileType: 'edits',
       query: {'user.edits': req.params.userId}});
 };
 
@@ -121,7 +121,7 @@ exports.list.ofUser.views = function(req, res) {
     res, {
       title: 'Shared file list (viewable) of ' + req.params.userId,
       fileListTitle: 'Shared Files (Viewable)',
-      fileType: 'owns',
+      fileType: 'views',
       query: {'user.views': req.params.userId}});
 };
 
