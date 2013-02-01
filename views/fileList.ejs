@@ -3,31 +3,46 @@
   <head>
     <title><%= title.page %></title>
     <link rel='stylesheet' href='/css/style.css' />
+    <link href="/css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <link href="/css/bootstrap-responsive.min.css" rel="stylesheet" media="screen">
   </head>
   <body>
-    <div class="userInfo">
-      <p><%= user.id %></p>
-    </div>
-    <div class="fileInfo">
-      <div class="fileList">
-        <h2><%= title.fileList %></h2>
-        <% if(file[file.type] && 0 < file[file.type].length) { %>
-          <% file[file.type].forEach(function(f, i) { %>
-            <% if(file.listSize != i) { %>
-              <div class="fileListBody">
-                <h3><a href="/file/<%= f.id %>"><%= f.name %></a></h3>
-                <%= f.uploaded %>
-              </div>
-            <% } %>
-          <% }) %>
-          <div>
+    <div class="container">
+      <div class="row userInfo">
+        <h2><%= title.fileList %> of <%= user.id %></h2>
+      </div>
+      <div class="row fileInfo">
+        <div class="fileList">
+          <% if(file[file.type] && 0 < file[file.type].length) { %>
+            <% file[file.type].forEach(function(f, i) { %>
+              <% if(file.listSize != i) { %>
+                <div class="fileListBody">
+                  <h3><a href="/file/<%= f.id %>"><%= f.name %></a></h3>
+                  <%= f.uploaded %>
+                </div>
+              <% } %>
+            <% }) %>
+          <% } %>
+        </div>
+        <div class="pager">
+          <li class="previous">
             <a href="/user/<%= user.id %>/file/<%= file.type %>">first</a>
-            <% if(file.listSize < file[file.type].length) { %>
+          </li>
+          <% if(file.listSize < file[file.type].length) { %>
+            <li class="previous">
               <a href="/user/<%= user.id %>/file/<%= file.type %>?page=<%= file.page + 1 %>">more</a>
-            <% } %>
-          </div>
-        <% } %>
+            </li>
+          <% } %>
+        </div>
       </div>
     </div>
+
+    <hr />
+    <footer>
+      <% include footer %>
+    </footer>
+
+    <!-- Placed at the end of the document so the pages load faster -->
+    <!-- <script src="/js/bootstrap.min.js"></script> -->
   </body>
 </html>

@@ -3,61 +3,76 @@
   <head>
     <title><%= title %></title>
     <link rel='stylesheet' href='/css/style.css' />
+    <link href="/css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <link href="/css/bootstrap-responsive.min.css" rel="stylesheet" media="screen">
   </head>
   <body>
-    <div class="userInfo">
-      <p><%= user.name %></p>
-      <p><%= user.id %></p>
+    <div class="container">
+      <div class="row">
+        <div class="span2 userInfo">
+          <img src="" />
+          <p><%= user.name %></p>
+          <p><%= user.id %></p>
+        </div>
+        <div class="span10 fileInfo">
+          <div class="row fileList">
+            <h2>Own Files</h2>
+            <% if(file.owns && 0 < file.owns.length) { %>
+              <% file.owns.forEach(function(own, i) { %>
+                <% if(file.listSize != i) { %>
+                  <div class="fileListBody">
+                    <h3><a href="/file/<%= own.id %>"><%= own.name %></a></h3>
+                    <%= own.uploaded %>
+                  </div>
+                <% } %>
+              <% }) %>
+              <% if(file.listSize < file.owns.length) { %>
+                <div><a href="/user/<%= user.id %>/file/owns">more</a></div>
+              <% } %>
+            <% } %>
+          </div>
+          <div class="row fileList">
+            <h2>Shared Files (Editable)</h2>
+            <% if(file.edits && 0 < file.edits.length) { %>
+              <% file.edits.forEach(function(edit, i) { %>
+                <% if(file.listSize != i) { %>
+                  <div class="fileListBody">
+                    <h3><a href="/file/<%= edit.id %>"><%= edit.name %></a></h3>
+                    <%= edit.uploaded %>
+                  </div>
+                <% } %>
+              <% }) %>
+              <% if(file.listSize < file.edits.length) { %>
+                <div><a href="/user/<%= user.id %>/file/edits">more</a></div>
+              <% } %>
+            <% } %>
+          </div>
+          <div class="row fileList">
+            <h2>Shared Files (Viewable)</h2>
+            <% if(file.views && 0 < file.views.length) { %>
+              <% file.views.forEach(function(view, i) { %>
+                <% if(file.listSize != i) { %>
+                  <div class="fileListBody">
+                    <h3><a href="/file/<%= view.id %>"><%= view.name %></a></h3>
+                    <%= view.uploaded %>
+                  </div>
+                <% } %>
+              <% }) %>
+              <% if(file.listSize < file.views.length) { %>
+                <div><a href="/user/<%= user.id %>/file/views">more</a></div>
+              <% } %>
+            <% } %>
+          </div>
+        </div>
+      </div>
     </div>
-    <div class="fileInfo">
-      <div class="fileList">
-        <h2>Own Files</h2>
-        <% if(file.owns && 0 < file.owns.length) { %>
-          <% file.owns.forEach(function(own, i) { %>
-            <% if(file.listSize != i) { %>
-              <div class="fileListBody">
-                <h3><a href="/file/<%= own.id %>"><%= own.name %></a></h3>
-                <%= own.uploaded %>
-              </div>
-            <% } %>
-          <% }) %>
-          <% if(file.listSize < file.owns.length) { %>
-            <div><a href="/user/<%= user.id %>/file/owns">more</a></div>
-          <% } %>
-        <% } %>
-      </div>
-      <div class="fileList">
-        <h2>Shared Files (Editable)</h2>
-        <% if(file.edits && 0 < file.edits.length) { %>
-          <% file.edits.forEach(function(edit, i) { %>
-            <% if(file.listSize != i) { %>
-              <div class="fileListBody">
-                <h3><a href="/file/<%= edit.id %>"><%= edit.name %></a></h3>
-                <%= edit.uploaded %>
-              </div>
-            <% } %>
-          <% }) %>
-          <% if(file.listSize < file.edits.length) { %>
-            <div><a href="/user/<%= user.id %>/file/edits">more</a></div>
-          <% } %>
-        <% } %>
-      </div>
-      <div class="fileList">
-        <h2>Shared Files (Viewable)</h2>
-        <% if(file.views && 0 < file.views.length) { %>
-          <% file.views.forEach(function(view, i) { %>
-            <% if(file.listSize != i) { %>
-              <div class="fileListBody">
-                <h3><a href="/file/<%= view.id %>"><%= view.name %></a></h3>
-                <%= view.uploaded %>
-              </div>
-            <% } %>
-          <% }) %>
-          <% if(file.listSize < file.views.length) { %>
-            <div><a href="/user/<%= user.id %>/file/views">more</a></div>
-          <% } %>
-        <% } %>
-      </div>
-    </div>
+
+    <hr />
+    <footer>
+      <% include footer %>
+    </footer>
+
+    <!-- Placed at the end of the document so the pages load faster -->
+    <!-- <script src="/js/bootstrap.min.js"></script> -->
   </body>
 </html>
