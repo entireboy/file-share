@@ -45,8 +45,17 @@ app.configure(function(){
   }));
     
   app.use(app.router);
-  app.use(require('less-middleware')({ src: __dirname + '/public' }));
+  app.use(require('less-middleware')({
+    src: __dirname + '/src/less'
+    , dest: __dirname + '/var/css'
+    , prefix: '/css'
+  }));
+
+
+  // 손수 만든 코드를 넣는다 - 이미지 등
   app.use(express.static(path.join(__dirname, 'public')));
+  // less나 uglify 등으로 자동으로 생성되는 내용 - 폴더를 다 지워도 새로 생성될 수 있는 것들만 넣는다
+  app.use(express.static(path.join(__dirname, 'var')));
 });
 
 app.configure('development', function(){
