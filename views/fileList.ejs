@@ -28,9 +28,9 @@
           <li class="previous">
             <a href="/user/<%= user.id %>/file/<%= file.type %>">first</a>
           </li>
-          <% if(file.listSize < file[file.type].length) { %>
+          <% if(file.hasMore) { %>
             <li class="previous">
-              <a href="/user/<%= user.id %>/file/<%= file.type %>?page=<%= file.page + 1 %>">more</a>
+              <a href="/user/<%= user.id %>/file/<%= file.type %>?lastId=<%= file.lastId %>">more</a>
             </li>
           <% } %>
         </div>

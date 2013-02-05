@@ -96,66 +96,109 @@ exports.list.ofUser = function(req, res, result) {
 };
 
 exports.list.ofUser.owns = function(req, res) {
+  var lastId = req.query.lastId;
+  var opts = {
+    title: {
+      page: 'Own file list of ' + req.params.userId
+      , fileList: 'Own Files'
+    }
+    , fileType: 'owns'
+    , query: {
+      'user.own': req.params.userId
+    }
+  }
+  if(lastId) {
+    opts.query['file.time'] = {'$lt': new Date(Number(lastId))}
+  }
   retrieveFilesOfUser(
-    req,
-    res, {
-      title: 'Own file list of ' + req.params.userId,
-      fileListTitle: 'Own Files',
-      fileType: 'owns',
-      query: {'user.own': req.params.userId}});
+    req
+    , res
+    , opts
+    , function(result) {
+      res.render('fileList', result);
+    });
 };
 
 exports.list.ofUser.edits = function(req, res) {
+  var lastId = req.query.lastId;
+  var opts = {
+    title: {
+      page: 'Shared file list (editable) of ' + req.params.userId
+      , fileList: 'Shared Files (Editable)'
+    }
+    , fileType: 'edits'
+    , query: {
+      'user.edits': req.params.userId
+    }
+  }
+  if(lastId) {
+    opts.query['file.time'] = {'$lt': new Date(Number(lastId))}
+  }
   retrieveFilesOfUser(
-    req,
-    res, {
-      title: 'Shared file list (editable) of ' + req.params.userId,
-      fileListTitle: 'Shared Files (Editable)',
-      fileType: 'edits',
-      query: {'user.edits': req.params.userId}});
+    req
+    , res
+    , opts
+    , function(result) {
+      res.render('fileList', result);
+    });
 };
 
 exports.list.ofUser.views = function(req, res) {
+  var lastId = req.query.lastId;
+  var opts = {
+    title: {
+      page: 'Shared file list (viewable) of ' + req.params.userId
+      , fileList: 'Shared Files (Viewable)'
+    }
+    , fileType: 'views'
+    , query: {
+      'user.views': req.params.userId
+    }
+  }
+  if(lastId) {
+    opts.query['file.time'] = {'$lt': new Date(Number(lastId))}
+  }
   retrieveFilesOfUser(
-    req,
-    res, {
-      title: 'Shared file list (viewable) of ' + req.params.userId,
-      fileListTitle: 'Shared Files (Viewable)',
-      fileType: 'views',
-      query: {'user.views': req.params.userId}});
+    req
+    , res
+    , opts
+    , function(result) {
+      res.render('fileList', result);
+    });
 };
 
-var retrieveFilesOfUser = function(req, res, opts) {
+var retrieveFilesOfUser = function(req, res, opts, callback) {
   var userId = req.params.userId;
-  var page = req.query.page;
-  if(!page || page < 1) page = 1;
   var listSize = CONFIG.server.file.listSize.userFile;
   var result = {};
-  result.title = {};
-  result.title.page = opts.title;
-  result.title.fileList = opts.fileListTitle;
+  result.title = opts.title;
   result.user = {};
   result.user.id = userId;
   result.file = {};
   result.file.type = opts.fileType;
-  result.file.page = page;
   result.file.listSize = listSize;
-  result.file[opts.fileType] = [];
+  var fileList = result.file[opts.fileType] = [];
 
   mongo.fetchCollection(FILE_COLLECTION, function(err, collection) {
-    collection.find(opts.query).skip((page - 1) * listSize).limit(listSize + 1).sort({'file.time':-1}).toArray(function(err, docs) {
+    collection.find(opts.query).limit(listSize + 1).sort({'file.time':-1}).toArray(function(err, docs) {
       if(err || null === docs) {
         res.json(error.CANNOT_FIND_FILE_INFO);
         return;
       }
       docs.forEach(function(doc, i) {
-        result.file[opts.fileType].push({
-          id: doc._id
-          , name: doc.file.name
-          , uploaded: dateFormat.toDateTime(doc.file.time)
-        });
+        if(i != listSize)
+        {
+          fileList.push({
+            id: doc._id
+            , name: doc.file.name
+            , uploaded: dateFormat.toDateTime(doc.file.time)
+          });
+          result.file.lastId = doc.file.time.getTime();
+        } else {
+          result.file.hasMore = true;
+        }
       });
-      res.render('fileList', result);
+      callback(result);
     });
   });
 };
