@@ -13,24 +13,22 @@
       </div>
       <div class="row fileInfo">
         <div class="fileList">
-          <% if(file[file.type] && 0 < file[file.type].length) { %>
-            <% file[file.type].forEach(function(f, i) { %>
-              <% if(file.listSize != i) { %>
-                <div class="fileListBody">
-                  <h3><a href="/file/<%= f.id %>"><%= f.name %></a></h3>
-                  <%= f.uploaded %>
-                </div>
-              <% } %>
+          <% if(file.list && 0 < file.list.length) { %>
+            <% file.list.forEach(function(f, i) { %>
+              <div class="fileListBody">
+                <h3><a href="/file/<%= f.id %>"><%= f.name %></a></h3>
+                <%= f.uploaded %>
+              </div>
             <% }) %>
           <% } %>
         </div>
         <div class="pager">
           <li class="previous">
-            <a href="/user/<%= user.id %>/file/<%= file.type %>">first</a>
+            <a href="<%= page.path %>">first</a>
           </li>
           <% if(file.hasMore) { %>
             <li class="previous">
-              <a href="/user/<%= user.id %>/file/<%= file.type %>?lastId=<%= file.lastId %>">more</a>
+              <a href="<%= page.path %>?lastId=<%= file.lastId %>">more</a>
             </li>
           <% } %>
         </div>
