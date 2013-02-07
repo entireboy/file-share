@@ -45,36 +45,44 @@
     <!-- <script src="/js/bootstrap.min.js"></script> -->
     <script src="http://code.jquery.com/jquery.min.js"></script>
     <script type="text/javascript">
-      $(window).scroll(function () {
-        if($(window).scrollTop() + $(window).height() > $(document).height() - 200) {
-          $('#more-error').hide();
-          if($('#fileList').hasClass('hasMore')) {
-            $('#more').css('top', '400');
-            $('#more').show();
-          }
-        } // end of if 페이지 끝에 닿기 200px 이내일 때
-        if($(window).scrollTop() + $(window).height() == $(document).height()) {
-          if($('#fileList').hasClass('hasMore')) {
-            $.ajax({
-              type: 'GET'
-              , datatype: 'json'
-              // TODO 리스트 로딩 완료 시 lastId를 바꿔줄 수 있어야 한다. - 어쩌면 lastId나 file id 방식을 바꿔야할 수 있음
-              , url: '<%= page.path %>.html?lastId=<%= file.lastId %>'
-              , success: function(files) {
-                $('#fileList').append(files);
-                $('#more').hide();
-              }
-              , error: function(jqXHR, status, err) {
+      $(document).ready(function() {
+        var lastId = <%= file.lastId %>;
+        var isLoadingContent = false;
+        $(window).scroll(function () {
+          if($(window).scrollTop() + $(window).height() > $(document).height() - 200) {
+            $('#more-error').hide();
+            if($('#fileList').hasClass('hasMore')) {
+              $('#more').css('top', '400');
+              $('#more').show();
+            }
+          } // end of if 페이지 끝에 닿기 200px 이내일 때
+          if($(window).scrollTop() + $(window).height() == $(document).height()) {
+            if($('#fileList').hasClass('hasMore') && !isLoadingContent) {
+              $.ajax({
+                type: 'GET'
+                , datatype: 'json'
+                , url: '<%= page.path %>.html?lastId=' + lastId
+                , beforeSend: function(jqXHR, settings) {
+                  isLoadingContent = true;
+                }
+              }).done(function(data, status, jqXHR) {
+                $('#fileList').append(data.html);
+                lastId = data.lastId;
+                if(data.hasMore) $('#fileList').addClass('hasMore');
+                else $('#fileList').removeClass('hasMore');
+              }).fail(function(jqXHR, status, err) {
                 $('#more-error').show();
+              }).always(function() {
                 $('#more').hide();
-              }
-            });
-          } else {
-            $('#no-more').css('top', '400');
-            $('#no-more').show();
-          }
-        } // end of if 페이지 끝에 닿았을 때
-      }); // end of window.scroll event
+                isLoadingContent = false;
+              });
+            } else {
+              $('#no-more').css('top', '400');
+              $('#no-more').show();
+            }
+          } // end of if 페이지 끝에 닿았을 때
+        }); // end of window.scroll event
+      }); // end of document.ready event
     </script>
   </body>
 </html>

@@ -148,7 +148,11 @@ exports.list.ofUser.owns.format = function(req, res) {
         break;
       case 'html':
       default:
-        res.render('fileContent', {file: file});
+        res.render('fileContent', {file: file}, function(err, html) {
+          delete file['list'];
+          file.html = html;
+          res.json(file);
+        });
         break;
     }
   });
@@ -207,7 +211,11 @@ exports.list.ofUser.edits.format = function(req, res) {
         break;
       case 'html':
       default:
-        res.render('fileContent', {file: file});
+        res.render('fileContent', {file: file}, function(err, html) {
+          delete file['list'];
+          file.html = html;
+          res.json(file);
+        });
         break;
     }
   });
@@ -266,7 +274,11 @@ exports.list.ofUser.views.format = function(req, res) {
         break;
       case 'html':
       default:
-        res.render('fileContent', {file: file});
+        res.render('fileContent', {file: file}, function(err, html) {
+          delete file['list'];
+          file.html = html;
+          res.json(file);
+        });
         break;
     }
   });
