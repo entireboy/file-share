@@ -126,7 +126,7 @@ exports.list.ofUser.owns = function(req, res) {
   });
 };
 
-exports.list.ofUser.owns.json = function(req, res) {
+exports.list.ofUser.owns.format = function(req, res) {
   var opts = {
     query: {
       'user.own': req.params.userId
@@ -141,7 +141,16 @@ exports.list.ofUser.owns.json = function(req, res) {
       return;
     }
 
-    res.json(file);
+    switch(req.params.format)
+    {
+      case 'json':
+        res.json({file: file});
+        break;
+      case 'html':
+      default:
+        res.render('fileContent', {file: file});
+        break;
+    }
   });
 };
 
@@ -176,7 +185,7 @@ exports.list.ofUser.edits = function(req, res) {
   });
 };
 
-exports.list.ofUser.edits.json = function(req, res) {
+exports.list.ofUser.edits.format = function(req, res) {
   var opts = {
     query: {
       'user.edits': req.params.userId
@@ -191,7 +200,16 @@ exports.list.ofUser.edits.json = function(req, res) {
       return;
     }
 
-    res.json(file);
+    switch(req.params.format)
+    {
+      case 'json':
+        res.json({file: file});
+        break;
+      case 'html':
+      default:
+        res.render('fileContent', {file: file});
+        break;
+    }
   });
 };
 
@@ -226,7 +244,7 @@ exports.list.ofUser.views = function(req, res) {
   });
 };
 
-exports.list.ofUser.views.json = function(req, res) {
+exports.list.ofUser.views.format = function(req, res) {
   var opts = {
     query: {
       'user.views': req.params.userId
@@ -241,7 +259,16 @@ exports.list.ofUser.views.json = function(req, res) {
       return;
     }
 
-    res.json(file);
+    switch(req.params.format)
+    {
+      case 'json':
+        res.json({file: file});
+        break;
+      case 'html':
+      default:
+        res.render('fileContent', {file: file});
+        break;
+    }
   });
 };
 

@@ -8,6 +8,7 @@
     <style type="text/css">
       #more {display:none;}
       #no-more {display:none;}
+      #more-error {display:none;}
     </style>
   </head>
   <body>
@@ -31,6 +32,7 @@
         </div>
         <div id="more">Loading more content</div>
         <div id="no-more">No more content</div>
+        <div id="more-error">An error occurred while loading more content</div>
       </div>
     </div>
 
@@ -45,29 +47,34 @@
     <script type="text/javascript">
       $(window).scroll(function () {
         if($(window).scrollTop() + $(window).height() > $(document).height() - 200) {
+          $('#more-error').hide();
           if($('#fileList').hasClass('hasMore')) {
             $('#more').css('top', '400');
             $('#more').show();
           }
-        }
+        } // end of if 페이지 끝에 닿기 200px 이내일 때
         if($(window).scrollTop() + $(window).height() == $(document).height()) {
-          $('#more').hide();
-          $('#no-more').hide();
-
           if($('#fileList').hasClass('hasMore')) {
             $.ajax({
               type: 'GET'
+              , datatype: 'json'
               // TODO 리스트 로딩 완료 시 lastId를 바꿔줄 수 있어야 한다. - 어쩌면 lastId나 file id 방식을 바꿔야할 수 있음
-              , url: '<%= page.path %>.json?lastId=<%= file.lastId %>'
+              , url: '<%= page.path %>.html?lastId=<%= file.lastId %>'
               , success: function(files) {
-                $('#fileList').append(JSON.stringify(files));
+                $('#fileList').append(files);
+                $('#more').hide();
+              }
+              , error: function(jqXHR, status, err) {
+                $('#more-error').show();
+                $('#more').hide();
               }
             });
           } else {
+            $('#no-more').css('top', '400');
             $('#no-more').show();
           }
-        }
-      });
+        } // end of if 페이지 끝에 닿았을 때
+      }); // end of window.scroll event
     </script>
   </body>
 </html>
