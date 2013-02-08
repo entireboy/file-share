@@ -61,7 +61,7 @@
               , beforeSend: function(jqXHR, settings) {
                 isLoadingContent = true;
               }
-              , timeout: 3000
+              , timeout: 30000
             }).done(function(data, status, jqXHR) {
               $('#fileList').append(data.html);
               lastId = data.lastId;
