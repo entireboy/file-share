@@ -2,16 +2,18 @@
 <html>
 <head>
   <title><%= title.page %></title>
-  <link rel='stylesheet' href='/css/style.css' />
   <link href="/css/bootstrap.min.css" rel="stylesheet" media="screen">
   <link href="/css/bootstrap-responsive.min.css" rel="stylesheet" media="screen">
+  <link rel='stylesheet' href='/css/style.css' />
   <style type="text/css">
-    #more {display:none;}
-    #no-more {display:none;}
-    #more-error {display:none;}
+    .pager #more {display:none;}
+    .pager #no-more {display:none;}
+    .pager #more-error {display:none;}
+    body > .container {padding: 40px 0;}
   </style>
 </head>
 <body>
+  <% include menu %>
   <div class="container">
     <div class="row userInfo">
       <h2><%= title.fileList %> of <a href="/user/<%= user.id %>"><%= user.id %></a></h2>
