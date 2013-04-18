@@ -43,7 +43,9 @@ app.configure(function(){
       console.log('Session storage is ready');
     })
   }));
-    
+
+  // 항상 로그인한 정보를 넣어준다. - router 보다 앞에 넣어주어야 함
+  app.use(whoami);
   app.use(app.router);
   app.use(require('less-middleware')({
     src: __dirname + '/src/less'
@@ -107,6 +109,13 @@ function checkPermission(req, res, next) {
     req.session.error = 'Login required!';
     res.redirect('/login' + routes.user.login.makeRedirectUrl(req.originalUrl));
   }
+}
+
+function whoami(req, res, next) {
+  if(req.session.user) res.locals.whoami = req.session.user;
+  else res.locals.whoami = undefined;
+  res.locals.loginUrl = '/login' + routes.user.login.makeRedirectUrl(req.originalUrl);
+  next();
 }
 
 var httpServer = http.createServer(app).listen(app.get('port'), function(){

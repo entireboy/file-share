@@ -7,13 +7,15 @@
         <li><a href="">LEFT CC</a></li>
         <li><a href="">LEFT DD</a></li>
         <li><a href="">LEFT EE</a></li>
-        <li><a href="">LEFT FF</a></li>
-        <li><a href="">LEFT GG</a></li>
       </ul>
       <ul class="nav pull-right">
         <li><a href="">AA</a></li>
         <li class="divider-vertical"></li>
-        <li><a href="">BB</a></li>
+        <% if(whoami) { %>
+          <li><a href="/logout">Log Out</a></li>
+        <% } else { %>
+          <li><a href="<%= loginUrl %>">Log in</a></li>
+        <% } %>
       </ul>
     </div>
   </div>
