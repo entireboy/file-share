@@ -5,6 +5,7 @@ var mongo = require('./common/mongo');
 var fs = require('fs');
 var error = require('./common/error');
 var CONFIG = require('config');
+var permission  = require('./permission');
 
 
 
@@ -19,10 +20,15 @@ exports.download = function(req, res) {
       
       var filePath = CONFIG.server.file.upload.path + doc.file.path;
       if(fs.existsSync(filePath)) {
-        console.log('download - fileId: ' + fileId + '(' + CONFIG.server.file.upload.path + doc.path + '), user: ' + req.session.user.id + '(' + req.session.user.name + ')');
-        res.download(filePath);
+        console.log('download - fileId: ' + fileId + '(' + CONFIG.server.file.upload.path + doc.file.path + ', ' + doc.share + '), user: ' + JSON.stringify(req.session.user));
+        if(permission.share.PUBLIC !== doc.share)
+          permission.requireLogin(req, res, function() {
+            res.download(filePath);
+          });
+        else
+          res.download(filePath);
       } else {
-        console.log('download fail (cannot find file in disk) - fileId: ' + fileId + '(' + CONFIG.server.file.upload.path + doc.path + '), user: ' + req.session.user.id + '(' + req.session.user.name + ')');
+        console.log('download fail (cannot find file in disk) - fileId: ' + fileId + '(' + CONFIG.server.file.upload.path + doc.file.path + ', ' + doc.share + '), user: ' + JSON.stringify(req.session.user));
         res.json(error.CANNOT_FIND_FILE);
         return;
       }

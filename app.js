@@ -9,7 +9,8 @@ var express = require('express')
   , path = require('path')
   , CONFIG = require('config')
   , mongodb = require('mongodb')
-  , mongoStore = require('connect-mongodb');
+  , mongoStore = require('connect-mongodb')
+  , permission = require('./routes/permission');
 
 var app = express();
 
@@ -82,15 +83,15 @@ app.get('/user/:userId/file/views', routes.file.list.ofUser.views);
 app.get('/user/:userId/file/views.:format', routes.file.list.ofUser.views.format);
 //app.get('/users', routes.user.list);
 
-app.get('/file/:fileId', checkPermission, routes.file.download);
-app.get('/file/info/:fileId', checkPermission, routes.file.info);
+app.get('/file/:fileId', routes.file.download);
+app.get('/file/info/:fileId', permission.requireLogin, routes.file.info);
 
 
 
 
 // for test
 app.configure('development', function() {
-  app.get('/restricted', checkPermission, function(req, res) {
+  app.get('/restricted', permission.requireLogin, function(req, res) {
     res.send('<p>restricted area</p><p><a href="/logout">logout</a>');
   });
 });
@@ -100,23 +101,13 @@ app.configure('development', function() {
 
 
 // Middleware
-function checkPermission(req, res, next) {
-  if(req.session.user) {
-//  TODO
-//  파일 권한 체크 후 next()
-    next();
-  } else {
-    req.session.error = 'Login required!';
-    res.redirect('/login' + routes.user.login.makeRedirectUrl(req.originalUrl));
-  }
-}
-
 function whoami(req, res, next) {
   if(req.session.user) res.locals.whoami = req.session.user;
   else res.locals.whoami = undefined;
   res.locals.loginUrl = '/login' + routes.user.login.makeRedirectUrl(req.originalUrl);
   next();
 }
+
 
 var httpServer = http.createServer(app).listen(app.get('port'), function(){
   console.log("Express server listening on port " + app.get('port'));
