@@ -9,6 +9,13 @@ var permission  = require('./permission');
 
 
 
+/**
+ * 요청한 파일(req.params.fileId)을 다운로드한다. 파일의 공유 설정과 접근 권한에 따라 로그인이 필요하거나 다운로드가 불가능할 수 있다.
+ * @param {http.ServerRequest} req HTTP request
+ *   {String} req.params.userId 사용자 ID
+ * @param {http.ServerResponse} res HTTP response
+ * @author entireboy
+ */
 exports.download = function(req, res) {
   var fileId = req.params.fileId;
   mongo.fetchCollection(FILE_COLLECTION, function(err, collection) {
@@ -36,6 +43,13 @@ exports.download = function(req, res) {
   });
 };
 
+/**
+ * 요청한 파일(req.params.fileId)의 정보를 조회한다. 파일의 공유 권한에 따라 로그인이 필요할 수 있다.
+ * @param {http.ServerRequest} req HTTP request
+ *   {String} req.params.userId 사용자 ID
+ * @param {http.ServerResponse} res HTTP response
+ * @author entireboy
+ */
 exports.info = function(req, res) {
   var fileId = req.params.fileId;
   mongo.fetchCollection(FILE_COLLECTION, function(err, collection) {
@@ -62,10 +76,12 @@ exports.info = function(req, res) {
 exports.list = {};
 
 /**
- * 사용자가 권한을 가지고 있는 모든 종류의 파일을 일부만 가져온다. (e.g. own, editable, viewable, ...)
+ * 사용자가 권한을 가지고 있는 모든 종류의 파일을 일부만 가져온다. (종류: own, editable, viewable, ...)
  * @param {http.ServerRequest} req HTTP request
+ *   {String} req.params.userId 사용자 ID
  * @param {http.ServerResponse} res HTTP response
  * @param {Json} result 화면에 돌려줄 결과, 사용자 아이디가 result.user.id의 값으로 반드시 존재해야 함
+ * @author entireboy
  */
 exports.list.ofUser = function(req, res, result) {
   mongo.fetchCollection(FILE_COLLECTION, function(err, collection) {
@@ -101,6 +117,14 @@ exports.list.ofUser = function(req, res, result) {
   });
 };
 
+/**
+ * 사용자가 소유한 파일을 조회한다. (페이징처리 포함)
+ * @param {http.ServerRequest} req HTTP request
+ *   {String} req.params.userId 사용자 ID
+ *   {Number} req.query.lastId 이전에 조회된 마지막 파일 ID (이 ID 다음의 파일을 페이지 크기 만큼 조회한다)
+ * @param {http.ServerResponse} res HTTP response
+ * @author entireboy
+ */
 exports.list.ofUser.owns = function(req, res) {
   var opts = {
     query: {
@@ -132,6 +156,15 @@ exports.list.ofUser.owns = function(req, res) {
   });
 };
 
+/**
+ * 사용자가 소유한 파일을 조회한다. (페이징처리 포함, 요청 format에 따라 응답이 달라짐)
+ * @param {http.ServerRequest} req HTTP request
+ *   {String} req.params.userId 사용자 ID
+ *   {String} req.params.format 요청 format (json|html(default))
+ *   {Number} req.query.lastId 이전에 조회된 마지막 파일 ID (이 ID 다음의 파일을 페이지 크기 만큼 조회한다)
+ * @param {http.ServerResponse} res HTTP response
+ * @author entireboy
+ */
 exports.list.ofUser.owns.format = function(req, res) {
   var opts = {
     query: {
@@ -164,6 +197,14 @@ exports.list.ofUser.owns.format = function(req, res) {
   });
 };
 
+/**
+ * 사용자가 수정 가능한 파일을 조회한다. (페이징처리 포함)
+ * @param {http.ServerRequest} req HTTP request
+ *   {String} req.params.userId 사용자 ID
+ *   {Number} req.query.lastId 이전에 조회된 마지막 파일 ID (이 ID 다음의 파일을 페이지 크기 만큼 조회한다)
+ * @param {http.ServerResponse} res HTTP response
+ * @author entireboy
+ */
 exports.list.ofUser.edits = function(req, res) {
   var opts = {
     query: {
@@ -195,6 +236,15 @@ exports.list.ofUser.edits = function(req, res) {
   });
 };
 
+/**
+ * 사용자가 수정 가능한 파일을 조회한다. (페이징처리 포함, 요청 format에 따라 응답이 달라짐)
+ * @param {http.ServerRequest} req HTTP request
+ *   {String} req.params.userId 사용자 ID
+ *   {String} req.params.format 요청 format (json|html(default))
+ *   {Number} req.query.lastId 이전에 조회된 마지막 파일 ID (이 ID 다음의 파일을 페이지 크기 만큼 조회한다)
+ * @param {http.ServerResponse} res HTTP response
+ * @author entireboy
+ */
 exports.list.ofUser.edits.format = function(req, res) {
   var opts = {
     query: {
@@ -227,6 +277,14 @@ exports.list.ofUser.edits.format = function(req, res) {
   });
 };
 
+/**
+ * 사용자가 다운로드/보기 가능한 파일을 조회한다. (페이징처리 포함)
+ * @param {http.ServerRequest} req HTTP request
+ *   {String} req.params.userId 사용자 ID
+ *   {Number} req.query.lastId 이전에 조회된 마지막 파일 ID (이 ID 다음의 파일을 페이지 크기 만큼 조회한다)
+ * @param {http.ServerResponse} res HTTP response
+ * @author entireboy
+ */
 exports.list.ofUser.views = function(req, res) {
   var opts = {
     query: {
@@ -258,6 +316,15 @@ exports.list.ofUser.views = function(req, res) {
   });
 };
 
+/**
+ * 사용자가 다운로드/보기 가능한 파일을 조회한다. (페이징처리 포함, 요청 format에 따라 응답이 달라짐)
+ * @param {http.ServerRequest} req HTTP request
+ *   {String} req.params.userId 사용자 ID
+ *   {String} req.params.format 요청 format (json|html(default))
+ *   {Number} req.query.lastId 이전에 조회된 마지막 파일 ID (이 ID 다음의 파일을 페이지 크기 만큼 조회한다)
+ * @param {http.ServerResponse} res HTTP response
+ * @author entireboy
+ */
 exports.list.ofUser.views.format = function(req, res) {
   var opts = {
     query: {
@@ -289,7 +356,13 @@ exports.list.ofUser.views.format = function(req, res) {
     }
   });
 };
-
+/**
+ * 실제 사용자의 파일을 조회한다.
+ * @param {json} opts 파일을 조회할 조건
+ * @param {Function} callback 파일 조회 후 호출되는 callback
+ *   {json} err 에러 발생 시 에러
+ *   {json} file 조회된 파일 목록
+ */
 var retrieveFilesOfUser = function(opts, callback) {
   var listSize = CONFIG.server.file.listSize.userFile;
   var result = {};
