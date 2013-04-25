@@ -78,9 +78,10 @@ exports.list = {};
 /**
  * 사용자가 권한을 가지고 있는 모든 종류의 파일을 일부만 가져온다. (종류: own, editable, viewable, ...)
  * @param {http.ServerRequest} req HTTP request
- *   {String} req.params.userId 사용자 ID
  * @param {http.ServerResponse} res HTTP response
  * @param {Json} result 화면에 돌려줄 결과, 사용자 아이디가 result.user.id의 값으로 반드시 존재해야 함
+ *   {Json} result.file 각 종류별 사용자 파일을 담을 배열 map
+ *   {String} result.user.id 사용자 ID
  * @author entireboy
  */
 exports.list.ofUser = function(req, res, result) {
@@ -356,12 +357,13 @@ exports.list.ofUser.views.format = function(req, res) {
     }
   });
 };
+
 /**
  * 실제 사용자의 파일을 조회한다.
- * @param {json} opts 파일을 조회할 조건
+ * @param {Json} opts 파일을 조회할 조건 (MongoDB의 조건)
  * @param {Function} callback 파일 조회 후 호출되는 callback
- *   {json} err 에러 발생 시 에러
- *   {json} file 조회된 파일 목록
+ *   {Json} err 에러 발생 시 에러
+ *   {Json} file 조회된 파일 목록
  */
 var retrieveFilesOfUser = function(opts, callback) {
   var listSize = CONFIG.server.file.listSize.userFile;

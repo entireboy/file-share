@@ -9,6 +9,18 @@ var CONFIG = require('config');
 // ================================================
 // user
 // ================================================
+/*
+ * 사용자 정보 페이지
+ * 다음과 같은 정보가 포함된다:
+ *   - 사용자 일반 정보
+ *   - 사용자의 파일
+ *      + 소유한 파일 (own)
+ *      + 수정 가능 파일 (edit)
+ *      + 사용/다운로드 가능 파일 (view)
+ * @param {http.ServerRequest} req HTTP request
+ *   {String} req.params.userId 사용자 ID
+ * @param {http.ServerResponse} res HTTP response
+ */
 exports.info = function(req, res) {
   var userId = req.params.userId;
   var result = {};
@@ -41,6 +53,12 @@ exports.info = function(req, res) {
 // ================================================
 exports.login = {};
 
+/**
+ * 로그인 페이지
+ * @param {http.ServerRequest} req HTTP request
+ *   {String} [req.params.url] 로그인 성공 후 redirect할 URL (optional)
+ * @param {http.ServerResponse} res HTTP response
+ */
 exports.login.page = function(req, res) {
   var redirectUrl = req.query.url || '';
   res.render('login', {title: 'Login', redirectUrl: redirectUrl});
@@ -69,24 +87,38 @@ exports.login.logout = function(req, res) {
   });
 };
 
+/**
+ * (로그인한 다음 등의 상황에서) redirect할 url의 경로를 반환한다.
+ * (redirect URL 표준화용도)
+ * @param {String} redirectUrl redirect할 url
+ * @rerurn {String} 표준화된 redirect URL
+ * @author entireboy
+ */
 var makeRedirectUrl = exports.login.makeRedirectUrl = function(redirectUrl) {
   if(!redirectUrl || '' === redirectUrl) return '';
   else return '?url=' + redirectUrl;
 };
 
-
+/**
+ * 로그인 인증을 수행한다.
+ * @param {String} id ID
+ * @param {String} pass password
+ * @param {Function} callback 인증 후 호출할 callback
+ *   {Error} error 에러 발생 시 에러
+ *   {Json} [user] 인증 성공한 사용자 정보
+ */
 var authenticate = function (id, pass, callback) {
   mongo.fetchCollection(USER_COLLECTION, function(err, collection) {
     collection.findOne({_id: id, password: pass}, function(err, cursor) {
-      if(err) return callback(err);
+      if(err) callback(err);
       
       if(cursor) {
-        return callback(null, {
+        callback(null, {
           id: cursor._id
           , name: cursor.name
         });
       } else {
-        return callback(new Error('Cannot find user'));
+        callback(new Error('Cannot find user'));
       }
     });
   });
