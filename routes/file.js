@@ -104,7 +104,7 @@ exports.list.ofUser = function(req, res, result) {
         retrievedFileTypeCount++;
 
         // 파일을 모두 구해오면 화면에 돌려준다.
-        if(retrievedFileTypeCount == totalFileTypeCount) res.render('userInfo', result);
+        if(retrievedFileTypeCount == totalFileTypeCount) res.render('user/userInfo', result);
       });
     };
 
@@ -148,7 +148,7 @@ exports.list.ofUser.owns = function(req, res) {
       return;
     }
 
-    res.render('fileList', {
+    res.render('file/fileList', {
       title: {
         page: 'Own file list of ' + userId
         , fileList: 'Own Files'
@@ -202,7 +202,7 @@ exports.list.ofUser.owns.format = function(req, res) {
         break;
       case 'html':
       default:
-        res.render('fileContent', {file: file}, function(err, html) {
+        res.render('file/fileContent', {file: file}, function(err, html) {
           delete file['list'];
           file.html = html;
           res.json(file);
@@ -242,7 +242,7 @@ exports.list.ofUser.edits = function(req, res) {
       return;
     }
 
-    res.render('fileList', {
+    res.render('file/fileList', {
       title: {
         page: 'Shared file list (editable) of ' + userId
         , fileList: 'Shared Files (Editable)'
@@ -296,7 +296,7 @@ exports.list.ofUser.edits.format = function(req, res) {
         break;
       case 'html':
       default:
-        res.render('fileContent', {file: file}, function(err, html) {
+        res.render('file/fileContent', {file: file}, function(err, html) {
           delete file['list'];
           file.html = html;
           res.json(file);
@@ -336,7 +336,7 @@ exports.list.ofUser.views = function(req, res) {
       return;
     }
 
-    res.render('fileList', {
+    res.render('file/fileList', {
       title: {
         page: 'Shared file list (viewable) of ' + userId
         , fileList: 'Shared Files (Viewable)'
@@ -390,7 +390,7 @@ exports.list.ofUser.views.format = function(req, res) {
         break;
       case 'html':
       default:
-        res.render('fileContent', {file: file}, function(err, html) {
+        res.render('file/fileContent', {file: file}, function(err, html) {
           delete file['list'];
           file.html = html;
           res.json(file);
