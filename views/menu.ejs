@@ -9,11 +9,13 @@
         <li><a href="">LEFT EE</a></li>
       </ul>
       <ul class="nav pull-right">
-        <li><a href="">AA</a></li>
-        <li class="divider-vertical"></li>
         <% if(whoami) { %>
+          <li><a href="/user/<%=whoami.id%>"><%=whoami.name%></a></li>
+          <li class="divider-vertical"></li>
           <li><a href="/logout">Logout</a></li>
         <% } else { %>
+          <li><a href="">Sign up</a></li>
+          <li class="divider-vertical"></li>
           <li><a href="<%= loginUrl %>">Login</a></li>
         <% } %>
       </ul>
