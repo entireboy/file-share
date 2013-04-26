@@ -121,15 +121,22 @@ exports.list.ofUser = function(req, res, result) {
 /**
  * 사용자가 소유한 파일을 조회한다. (페이징처리 포함)
  * @param {http.ServerRequest} req HTTP request
- *   {String} req.params.userId 사용자 ID
+ *   {String} [req.params.userId] 사용자 ID (optional - 주어지지 않는 경우 로그인한 사용자)
  *   {Number} req.query.lastId 이전에 조회된 마지막 파일 ID (이 ID 다음의 파일을 페이지 크기 만큼 조회한다)
  * @param {http.ServerResponse} res HTTP response
  * @author entireboy
  */
 exports.list.ofUser.owns = function(req, res) {
+  var userId = req.params.userId;
+  if(!userId) {
+    permission.requireLogin(req, res, function() {
+      userId = req.session.user.id;
+    });
+  }
+
   var opts = {
     query: {
-      'user.own': req.params.userId
+      'user.own': userId
     }
   };
   if(req.query.lastId) {
@@ -143,11 +150,11 @@ exports.list.ofUser.owns = function(req, res) {
 
     res.render('fileList', {
       title: {
-        page: 'Own file list of ' + req.params.userId
+        page: 'Own file list of ' + userId
         , fileList: 'Own Files'
       }
       , user: {
-        id: req.params.userId
+        id: userId
       }
       , file: file
       , page: {
@@ -160,16 +167,23 @@ exports.list.ofUser.owns = function(req, res) {
 /**
  * 사용자가 소유한 파일을 조회한다. (페이징처리 포함, 요청 format에 따라 응답이 달라짐)
  * @param {http.ServerRequest} req HTTP request
- *   {String} req.params.userId 사용자 ID
+ *   {String} [req.params.userId] 사용자 ID (optional - 주어지지 않는 경우 로그인한 사용자)
  *   {String} req.params.format 요청 format (json|html(default))
  *   {Number} req.query.lastId 이전에 조회된 마지막 파일 ID (이 ID 다음의 파일을 페이지 크기 만큼 조회한다)
  * @param {http.ServerResponse} res HTTP response
  * @author entireboy
  */
 exports.list.ofUser.owns.format = function(req, res) {
+  var userId = req.params.userId;
+  if(!userId) {
+    permission.requireLogin(req, res, function() {
+      userId = req.session.user.id;
+    });
+  }
+
   var opts = {
     query: {
-      'user.own': req.params.userId
+      'user.own': userId
     }
   };
   if(req.query.lastId) {
@@ -201,15 +215,22 @@ exports.list.ofUser.owns.format = function(req, res) {
 /**
  * 사용자가 수정 가능한 파일을 조회한다. (페이징처리 포함)
  * @param {http.ServerRequest} req HTTP request
- *   {String} req.params.userId 사용자 ID
+ *   {String} [req.params.userId] 사용자 ID (optional - 주어지지 않는 경우 로그인한 사용자)
  *   {Number} req.query.lastId 이전에 조회된 마지막 파일 ID (이 ID 다음의 파일을 페이지 크기 만큼 조회한다)
  * @param {http.ServerResponse} res HTTP response
  * @author entireboy
  */
 exports.list.ofUser.edits = function(req, res) {
+  var userId = req.params.userId;
+  if(!userId) {
+    permission.requireLogin(req, res, function() {
+      userId = req.session.user.id;
+    });
+  }
+
   var opts = {
     query: {
-      'user.edits': req.params.userId
+      'user.edits': userId
     }
   };
   if(req.query.lastId) {
@@ -223,11 +244,11 @@ exports.list.ofUser.edits = function(req, res) {
 
     res.render('fileList', {
       title: {
-        page: 'Shared file list (editable) of ' + req.params.userId
+        page: 'Shared file list (editable) of ' + userId
         , fileList: 'Shared Files (Editable)'
       }
       , user: {
-        id: req.params.userId
+        id: userId
       }
       , file: file
       , page: {
@@ -240,16 +261,23 @@ exports.list.ofUser.edits = function(req, res) {
 /**
  * 사용자가 수정 가능한 파일을 조회한다. (페이징처리 포함, 요청 format에 따라 응답이 달라짐)
  * @param {http.ServerRequest} req HTTP request
- *   {String} req.params.userId 사용자 ID
+ *   {String} [req.params.userId] 사용자 ID (optional - 주어지지 않는 경우 로그인한 사용자)
  *   {String} req.params.format 요청 format (json|html(default))
  *   {Number} req.query.lastId 이전에 조회된 마지막 파일 ID (이 ID 다음의 파일을 페이지 크기 만큼 조회한다)
  * @param {http.ServerResponse} res HTTP response
  * @author entireboy
  */
 exports.list.ofUser.edits.format = function(req, res) {
+  var userId = req.params.userId;
+  if(!userId) {
+    permission.requireLogin(req, res, function() {
+      userId = req.session.user.id;
+    });
+  }
+
   var opts = {
     query: {
-      'user.edits': req.params.userId
+      'user.edits': userId
     }
   };
   if(req.query.lastId) {
@@ -281,15 +309,22 @@ exports.list.ofUser.edits.format = function(req, res) {
 /**
  * 사용자가 다운로드/보기 가능한 파일을 조회한다. (페이징처리 포함)
  * @param {http.ServerRequest} req HTTP request
- *   {String} req.params.userId 사용자 ID
+ *   {String} [req.params.userId] 사용자 ID (optional - 주어지지 않는 경우 로그인한 사용자)
  *   {Number} req.query.lastId 이전에 조회된 마지막 파일 ID (이 ID 다음의 파일을 페이지 크기 만큼 조회한다)
  * @param {http.ServerResponse} res HTTP response
  * @author entireboy
  */
 exports.list.ofUser.views = function(req, res) {
+  var userId = req.params.userId;
+  if(!userId) {
+    permission.requireLogin(req, res, function() {
+      userId = req.session.user.id;
+    });
+  }
+
   var opts = {
     query: {
-      'user.views': req.params.userId
+      'user.views': userId
     }
   };
   if(req.query.lastId) {
@@ -303,11 +338,11 @@ exports.list.ofUser.views = function(req, res) {
 
     res.render('fileList', {
       title: {
-        page: 'Shared file list (viewable) of ' + req.params.userId
+        page: 'Shared file list (viewable) of ' + userId
         , fileList: 'Shared Files (Viewable)'
       }
       , user: {
-        id: req.params.userId
+        id: userId
       }
       , file: file
       , page: {
@@ -320,16 +355,23 @@ exports.list.ofUser.views = function(req, res) {
 /**
  * 사용자가 다운로드/보기 가능한 파일을 조회한다. (페이징처리 포함, 요청 format에 따라 응답이 달라짐)
  * @param {http.ServerRequest} req HTTP request
- *   {String} req.params.userId 사용자 ID
+ *   {String} [req.params.userId] 사용자 ID (optional - 주어지지 않는 경우 로그인한 사용자)
  *   {String} req.params.format 요청 format (json|html(default))
  *   {Number} req.query.lastId 이전에 조회된 마지막 파일 ID (이 ID 다음의 파일을 페이지 크기 만큼 조회한다)
  * @param {http.ServerResponse} res HTTP response
  * @author entireboy
  */
 exports.list.ofUser.views.format = function(req, res) {
+  var userId = req.params.userId;
+  if(!userId) {
+    permission.requireLogin(req, res, function() {
+      userId = req.session.user.id;
+    });
+  }
+
   var opts = {
     query: {
-      'user.views': req.params.userId
+      'user.views': userId
     }
   };
   if(req.query.lastId) {
