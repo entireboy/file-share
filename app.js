@@ -75,8 +75,11 @@ app.post('/login', routes.user.login.login);
 app.all('/logout', routes.user.login.logout);
 
 app.get('/owns', routes.file.list.ofUser.owns);
+app.get('/owns.:format', routes.file.list.ofUser.owns.format);
 app.get('/edits', routes.file.list.ofUser.edits);
+app.get('/edits.:format', routes.file.list.ofUser.edits.format);
 app.get('/views', routes.file.list.ofUser.views);
+app.get('/views.:format', routes.file.list.ofUser.views.format);
 
 app.get('/user/:userId', routes.user.info);
 app.get('/user/:userId/file/owns', routes.file.list.ofUser.owns);
