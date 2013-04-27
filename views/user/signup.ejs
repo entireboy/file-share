@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title><%= title %></title>
+  <link href="/css/bootstrap.min.css" rel="stylesheet" media="screen">
+  <link href="/css/bootstrap-responsive.min.css" rel="stylesheet" media="screen">
+  <link rel='stylesheet' href='/css/style.css' />
+  <style type="text/css">
+    .checkResult {margin-left: 10px;}
+    .checkResult.good {color: green;}
+    .checkResult.bad {color: red;}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="row">
+      <h1><%= title %></h1>
+    </div>
+    <div class="row">
+      <form action="/signup" method="post">
+        <div>
+          <input type="text" name="user[id]" id="id" placeholder="Username" />
+        </div>
+        <div>
+          <input type="password" name="user[pass]" id="pass" placeholder="Password" />
+          <span id="passGood" class="checkResult good" style="display:none;">Good</span>
+          <span id="passTooShort" class="checkResult bad" style="display:none;">Too short</span>
+        </div>
+        <div>
+          <input type="password" name="user[pass]" id="passConfirm" placeholder="Password confirm" />
+          <span id="passSame" class="checkResult good" style="display:none;">Good</span>
+          <span id="passNotSame" class="checkResult bad" style="display:none;">Not same</span>
+        </div>
+        <div>
+          <input type="submit" value="Sign up" />
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <hr />
+  <footer>
+    <% include ../common/footer %>
+  </footer>
+
+  <!-- Placed at the end of the document so the pages load faster -->
+  <!-- <script src="/js/bootstrap.min.js"></script> -->
+  <script src="http://code.jquery.com/jquery.min.js"></script>
+  <script type="text/javascript">
+  function checkPasswordLength() {
+    var pass = $('#pass').val();
+
+    if(6 <= pass.length) {
+      $('#passGood').css('display', 'inline');
+      $('#passTooShort').css('display', 'none');
+    }
+    else {
+      $('#passGood').css('display', 'none');
+      $('#passTooShort').css('display', 'inline');
+    }
+  }
+
+  function checkPasswordSame() {
+    var pass = $('#pass').val();
+    var passConfirm = $('#passConfirm').val();
+
+    if(pass || passConfirm) {
+      if(pass === passConfirm) {
+        $('#passSame').css('display', 'inline');
+        $('#passNotSame').css('display', 'none');
+      }
+      else {
+        $('#passSame').css('display', 'none');
+        $('#passNotSame').css('display', 'inline');
+      }
+    }
+  }
+
+  $('#pass').keyup(checkPasswordSame);
+  $('#pass').keyup(checkPasswordLength);
+  $('#passConfirm').keyup(checkPasswordSame);
+  </script>
+</body>
+</html>

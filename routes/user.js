@@ -9,7 +9,7 @@ var CONFIG = require('config');
 // ================================================
 // user
 // ================================================
-/*
+/**
  * 사용자 정보 페이지
  * 다음과 같은 정보가 포함된다:
  *   - 사용자 일반 정보
@@ -48,6 +48,21 @@ exports.info = function(req, res) {
   });
 };
 
+exports.signup = {};
+
+/**
+ * 회원가입 페이지
+ * @param {http.ServerRequest} req HTTP request
+ * @param {http.ServerResponse} res HTTP response
+ */
+exports.signup.page = function(req, res) {
+  res.render('user/signup', {title: 'Sign up'});
+};
+
+exports.signup.signup = function(req, res) {
+
+};
+
 // ================================================
 // login
 // ================================================
@@ -61,7 +76,7 @@ exports.login = {};
  */
 exports.login.page = function(req, res) {
   var redirectUrl = req.query.url || '';
-  res.render('login', {title: 'Login', redirectUrl: redirectUrl});
+  res.render('user/login', {title: 'Login', redirectUrl: redirectUrl});
 };
 
 exports.login.login = function(req, res) {

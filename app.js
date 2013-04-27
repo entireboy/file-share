@@ -70,6 +70,9 @@ app.configure('development', function(){
 // Route setting
 app.get('/', routes.index);
 
+app.get('/signup', routes.user.signup.page);
+app.post('/signup', routes.user.signup.signup);
+
 app.get('/login', routes.user.login.page);
 app.post('/login', routes.user.login.login);
 app.all('/logout', routes.user.login.logout);
@@ -88,7 +91,6 @@ app.get('/user/:userId/file/edits', routes.file.list.ofUser.edits);
 app.get('/user/:userId/file/edits.:format', routes.file.list.ofUser.edits.format);
 app.get('/user/:userId/file/views', routes.file.list.ofUser.views);
 app.get('/user/:userId/file/views.:format', routes.file.list.ofUser.views.format);
-//app.get('/users', routes.user.list);
 
 app.get('/file/:fileId', routes.file.download);
 app.get('/file/info/:fileId', permission.requireLogin, routes.file.info);
@@ -108,6 +110,13 @@ app.configure('development', function() {
 
 
 // Middleware
+
+/**
+ * 로그인한 사용자 정보를 rendering에 사용할 수 있게 항상 넣어주는 middleware
+ * @param {http.ServerRequest} req HTTP request
+ * @param {http.ServerResponse} res HTTP response
+ * @param {callback} next
+ */
 function whoami(req, res, next) {
   if(req.session.user) res.locals.whoami = req.session.user;
   else res.locals.whoami = undefined;

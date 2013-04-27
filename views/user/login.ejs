@@ -7,20 +7,24 @@
   <link rel='stylesheet' href='/css/style.css' />
 </head>
 <body>
-  <h1><%= title %></h1>
-  <div>
-    <form action="/login" method="post">
-      <input type="hidden" name="url" id="url" value="<%= redirectUrl %>" />
-      <div>
-        <input type="text" name="user[id]" id="user[id]" placeholder="Username" />
-      </div>
-      <div>
-        <input type="text" name="user[pass]" id="user[pass]" placeholder="Password" />
-      </div>
-      <div>
-        <input type="submit" value="login" />
-      </div>
-    </form>
+  <div class="container">
+    <div class="row">
+      <h1><%= title %></h1>
+    </div>
+    <div class="row">
+      <form action="/login" method="post">
+        <input type="hidden" name="url" id="url" value="<%= redirectUrl %>" />
+        <div>
+          <input type="text" name="user[id]" id="user[id]" placeholder="Username" />
+        </div>
+        <div>
+          <input type="text" name="user[pass]" id="user[pass]" placeholder="Password" />
+        </div>
+        <div>
+          <input type="submit" value="login" />
+        </div>
+      </form>
+    </div>
   </div>
 
   <hr />
