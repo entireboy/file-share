@@ -19,8 +19,11 @@
     <div class="row">
       <form action="/signup" method="post">
         <div>
-          <input type="text" name="user[id]" id="id" placeholder="Username" value="<%= takenId? takenId : '' %>" />
+          <input type="text" name="user[id]" id="id" placeholder="User ID" value="<%= userId? userId : '' %>" />
           <span id="isIdTaken" class="checkResult bad" style="display:<%= isIdTaken? 'inline':  'none' %>;">Already taken</span>
+        </div>
+        <div>
+          <input type="text" name="user[name]" id="name" placeholder="Username" value="<%= userName? userName : '' %>" />
         </div>
         <div>
           <input type="password" name="user[pass]" id="pass" placeholder="Password" />
@@ -28,7 +31,7 @@
           <span id="passTooShort" class="checkResult bad" style="display:none;">Too short</span>
         </div>
         <div>
-          <input type="password" name="user[pass]" id="passConfirm" placeholder="Password confirm" />
+          <input type="password" id="passConfirm" placeholder="Password confirm" />
           <span id="passSame" class="checkResult good" style="display:none;">Good</span>
           <span id="passNotSame" class="checkResult bad" style="display:none;">Not same</span>
         </div>

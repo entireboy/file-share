@@ -56,18 +56,18 @@ exports.signup = {};
  * @param {http.ServerResponse} res HTTP response
  */
 exports.signup.page = function(req, res) {
-  console.log(res.locals.whoami);
-  console.log(res.locals.id);
-  console.log(res.locals.userId);
   res.render('user/signup', {
     title: 'Sign up'
-    , takenId: undefined
+    , userId: undefined
     , isIdTaken: false
+    , userName: undefined
   });
 };
 
 exports.signup.signup = function(req, res) {
   var userId = req.body.user.id;
+  var userName = req.body.user.name;
+  var pass = req.body.user.pass;
 
   mongo.fetchCollection(USER_COLLECTION, function(err, collection) {
     collection.findOne({_id: userId}, function(err, user) {
@@ -80,8 +80,21 @@ exports.signup.signup = function(req, res) {
       if(user) {
         res.render('user/signup', {
           title: 'Sign up'
-          , takenId: userId
+          , userId: userId
           , isIdTaken: true
+          , userName : userName
+        });
+      } else {
+        mongo.fetchCollection(USER_COLLECTION, function(err, collection) {
+          collection.insert({_id: userId, name: userName, password: pass}, function(err, data) {
+            if(err) {
+              res.json(error.UNKNOWN_MONGO);
+              return;
+            }
+
+            // 사용자 추가 후 로그인
+            exports.login.login(req, res);
+          });
         });
       }
     });
@@ -105,14 +118,17 @@ exports.login.page = function(req, res) {
 };
 
 exports.login.login = function(req, res) {
-  authenticate(req.body.user.id, req.body.user.pass, function(err, user) {
+  var userId = req.body.user.id;
+  var pass = req.body.user.pass;
+
+  authenticate(userId, pass, function(err, user) {
     if(user) {
       req.session.regenerate(function() {
         req.session.user = user;
         req.session.message = 'Authenticated as ' + user.name;
         
         if(req.body.url) res.redirect(req.body.url);
-        else res.redirect('/');
+        else res.redirect('/user/' + userId);
       });
     } else {
         req.session.message = error.AUTHENTICATION_FAIL.dmessage;
