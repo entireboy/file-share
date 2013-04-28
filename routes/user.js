@@ -56,11 +56,36 @@ exports.signup = {};
  * @param {http.ServerResponse} res HTTP response
  */
 exports.signup.page = function(req, res) {
-  res.render('user/signup', {title: 'Sign up'});
+  console.log(res.locals.whoami);
+  console.log(res.locals.id);
+  console.log(res.locals.userId);
+  res.render('user/signup', {
+    title: 'Sign up'
+    , takenId: undefined
+    , isIdTaken: false
+  });
 };
 
 exports.signup.signup = function(req, res) {
+  var userId = req.body.user.id;
 
+  mongo.fetchCollection(USER_COLLECTION, function(err, collection) {
+    collection.findOne({_id: userId}, function(err, user) {
+      if(err) {
+        res.json(error.UNKNOWN_MONGO);
+        return;
+      }
+
+      // 이미 사용자 ID가 존재하는 경우
+      if(user) {
+        res.render('user/signup', {
+          title: 'Sign up'
+          , takenId: userId
+          , isIdTaken: true
+        });
+      }
+    });
+  });
 };
 
 // ================================================
