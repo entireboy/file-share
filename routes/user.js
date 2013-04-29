@@ -64,6 +64,15 @@ exports.signup.page = function(req, res) {
   });
 };
 
+/**
+ * 회원가입
+ * 회원가입 성공 시 자동으로 로그인되며, 이후는 로그인 절차에 따른다.
+ * @param {http.ServerRequest} req HTTP request
+ *   {String} req.body.user.id 사용자 ID
+ *   {String} req.body.user.name 사용자 이름
+ *   {String} req.body.user.pass 사용자 비밀번호
+ * @param {http.ServerResponse} res HTTP response
+ */
 exports.signup.signup = function(req, res) {
   var userId = req.body.user.id;
   var userName = req.body.user.name;
@@ -85,6 +94,7 @@ exports.signup.signup = function(req, res) {
           , userName : userName
         });
       } else {
+        // 사용자 추가
         mongo.fetchCollection(USER_COLLECTION, function(err, collection) {
           collection.insert({_id: userId, name: userName, password: pass}, function(err, data) {
             if(err) {
@@ -117,6 +127,15 @@ exports.login.page = function(req, res) {
   res.render('user/login', {title: 'Login', redirectUrl: redirectUrl});
 };
 
+/**
+ * 로그인
+ * @param {http.ServerRequest} req HTTP request
+ *   {String} req.body.user.id 사용자 ID
+ *   {String} req.body.user.name 사용자 이름
+ *   {String} req.body.user.pass 사용자 비밀번호
+ *   {String} [req.body.url] 로그인 후 포워딩할 주소
+ * @param {http.ServerResponse} res HTTP response
+ */
 exports.login.login = function(req, res) {
   var userId = req.body.user.id;
   var pass = req.body.user.pass;
