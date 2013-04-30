@@ -1,4 +1,4 @@
-<div class="navbar navbar-fixed-top">
+<div class="gnb navbar navbar-fixed-top">
   <div class="navbar-inner">
     <div class="container">
       <ul class="nav">
@@ -10,9 +10,18 @@
       </ul>
       <ul class="nav pull-right">
         <% if(whoami) { %>
-          <li><a href="/user/<%=whoami.id%>"><%=whoami.name%></a></li>
-          <li class="divider-vertical"></li>
-          <li><a href="/logout">Logout</a></li>
+          <li>
+            <div class="btn-group">
+              <a class="btn" href="/user/<%=whoami.id%>"><i class="icon-user"></i> <%=whoami.name%></a>
+              <a class="btn dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></a>
+              <ul class="dropdown-menu">
+                <li><a href="#"><i class="i"></i>...</a></li>
+                <li class="divider"></li>
+                <li><a href="/logout"><i class="i"></i>Logout</a></li>
+              </ul>
+            </div>
+          </li>
+          <li><div><a href="#" class="btn"><i class="icon-plus"></i></a></div></li>
         <% } else { %>
           <li><a href="/signup">Sign up</a></li>
           <li class="divider-vertical"></li>
@@ -22,3 +31,7 @@
     </div>
   </div>
 </div>
+
+
+<script src="http://code.jquery.com/jquery.min.js"></script>
+<script src="js/bootstrap-dropdown.js"></script>
