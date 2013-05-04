@@ -5,6 +5,7 @@
   <link href="/css/bootstrap.min.css" rel="stylesheet" media="screen">
   <link href="/css/bootstrap-responsive.min.css" rel="stylesheet" media="screen">
   <link rel='stylesheet' href='/css/style.css' />
+  <link rel='stylesheet' href='/css/login.css' />
   <style type="text/css">
     .checkResult {margin-left: 10px;}
     .checkResult.good {color: green;}
@@ -17,7 +18,7 @@
     <div class="row">
       <h1><%= title %></h1>
     </div>
-    <div class="row">
+    <div class="row form">
       <form action="/signup" method="post">
         <div>
           <input type="text" name="user[id]" id="id" placeholder="User ID" value="<%= userId? userId : '' %>" />
@@ -36,8 +37,10 @@
           <span id="passSame" class="checkResult good" style="display:none;">Good</span>
           <span id="passNotSame" class="checkResult bad" style="display:none;">Not same</span>
         </div>
-        <div>
-          <input type="submit" value="Sign up" />
+        <div class="button">
+          <div class="right">
+            <input type="submit" value="Sign up" />
+          </div>
         </div>
       </form>
     </div>

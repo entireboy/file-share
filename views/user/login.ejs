@@ -5,6 +5,7 @@
   <link href="/css/bootstrap.min.css" rel="stylesheet" media="screen">
   <link href="/css/bootstrap-responsive.min.css" rel="stylesheet" media="screen">
   <link rel='stylesheet' href='/css/style.css' />
+  <link rel='stylesheet' href='/css/login.css' />
 </head>
 <body>
   <% include ../common/menu %>
@@ -12,7 +13,7 @@
     <div class="row">
       <h1><%= title %></h1>
     </div>
-    <div class="row">
+    <div class="row form">
       <form action="/login" method="post">
         <input type="hidden" name="url" id="url" value="<%= redirectUrl %>" />
         <div>
@@ -21,8 +22,9 @@
         <div>
           <input type="text" name="user[pass]" id="user[pass]" placeholder="Password" />
         </div>
-        <div>
-          <input type="submit" value="login" />
+        <div class="button">
+          <div class="left"><a href="/signup">signup</a></div>
+          <div class="right"><input type="submit" value="login" /></div>
         </div>
       </form>
     </div>
