@@ -4,7 +4,8 @@
   <title><%= title.page %></title>
   <link href="/css/bootstrap.min.css" rel="stylesheet" media="screen">
   <link href="/css/bootstrap-responsive.min.css" rel="stylesheet" media="screen">
-  <link rel='stylesheet' href='/css/style.css' />
+  <link href="/css/font-awesome.min.css" rel="stylesheet" media="screen">
+  <link href="/css/style.css" rel="stylesheet" />
 </head>
 <body>
   <% include ../common/menu %>
@@ -17,10 +18,10 @@
         <% include fileContent %>
       </div>
       <div class="pager">
-        <div id="more">Loading more content</div>
-        <div id="no-more">No more content</div>
+        <div id="more"><p><i class="icon-refresh icon-spin"></i> Loading more files</p></div>
+        <div id="no-more"><p><span class="icon-remove"></span> No more files</p></div>
         <div id="more-error">
-          <p>An error occurred while loading more content<br />Please, try again</p>
+          <p>An error occurred while loading more files<br />Please, try again</p>
         </div>
       </div>
     </div>
