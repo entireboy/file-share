@@ -92,6 +92,7 @@ app.get('/user/:userId/file/edits.:format', routes.file.list.ofUser.edits.format
 app.get('/user/:userId/file/views', routes.file.list.ofUser.views);
 app.get('/user/:userId/file/views.:format', routes.file.list.ofUser.views.format);
 
+app.get('/file/upload', permission.requireLogin, routes.file.upload.page);
 app.get('/file/:fileId', routes.file.download);
 app.get('/file/info/:fileId', permission.requireLogin, routes.file.info);
 
