@@ -56,6 +56,10 @@ exports.upload.page = function(req, res) {
   });
 };
 
+exports.upload.upload = function(req, res) {
+  console.log(req.files.file);
+};
+
 /**
  * 요청한 파일(req.params.fileId)의 정보를 조회한다. 파일의 공유 권한에 따라 로그인이 필요할 수 있다.
  * @param {http.ServerRequest} req HTTP request

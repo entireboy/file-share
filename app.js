@@ -29,7 +29,7 @@ app.configure(function(){
   app.set('view engine', 'ejs');
   app.use(express.favicon());
   app.use(express.logger('dev'));
-  app.use(express.bodyParser());
+  app.use(express.bodyParser({uploadDir: CONFIG.server.file.upload.path}));
   app.use(express.methodOverride());
   app.use(express.cookieParser(CONFIG.secure.cookie.secret));
   app.use(express.session({
@@ -93,6 +93,7 @@ app.get('/user/:userId/file/views', routes.file.list.ofUser.views);
 app.get('/user/:userId/file/views.:format', routes.file.list.ofUser.views.format);
 
 app.get('/file/upload', permission.requireLogin, routes.file.upload.page);
+app.post('/file/upload', permission.requireLogin, routes.file.upload.upload);
 app.get('/file/:fileId', routes.file.download);
 app.get('/file/info/:fileId', permission.requireLogin, routes.file.info);
 
