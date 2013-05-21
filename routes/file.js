@@ -25,15 +25,15 @@ exports.download = function(req, res) {
         return;
       }
       
-      var filePath = CONFIG.server.file.upload.path + doc.file.path;
+      var filePath = CONFIG.server.file.upload.path + '/' + doc.file.path;
       if(fs.existsSync(filePath)) {
         console.log('download - fileId: ' + fileId + '(' + CONFIG.server.file.upload.path + doc.file.path + ', ' + doc.share + '), user: ' + JSON.stringify(req.session.user));
         if(permission.share.PUBLIC !== doc.share)
           permission.requireLogin(req, res, function() {
-            res.download(filePath);
+            res.download(filePath, doc.file.name);
           });
         else
-          res.download(filePath);
+          res.download(filePath, doc.file.name);
       } else {
         console.log('download fail (cannot find file in disk) - fileId: ' + fileId + '(' + CONFIG.server.file.upload.path + doc.file.path + ', ' + doc.share + '), user: ' + JSON.stringify(req.session.user));
         res.json(error.CANNOT_FIND_FILE);
