@@ -29,7 +29,11 @@ app.configure(function(){
   app.set('view engine', 'ejs');
   app.use(express.favicon());
   app.use(express.logger('dev'));
-  app.use(express.bodyParser({uploadDir: CONFIG.server.file.upload.path}));
+
+  // 파일 업로드는 bodyParser 대신 formidable을 직접 사용
+  app.use(express.json());
+  app.use(express.urlencoded());
+
   app.use(express.methodOverride());
   app.use(express.cookieParser(CONFIG.secure.cookie.secret));
   app.use(express.session({

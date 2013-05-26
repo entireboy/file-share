@@ -1,11 +1,13 @@
 var FILE_COLLECTION = 'file';
 
-var dateFormat = require('./common/dateFormat');
-var mongo = require('./common/mongo');
-var fs = require('fs');
-var error = require('./common/error');
-var CONFIG = require('config');
-var permission  = require('./permission');
+var dateFormat = require('./common/dateFormat')
+  , mongo = require('./common/mongo')
+  , fs = require('fs')
+  , path = require('path')
+  , formidable = require('formidable')
+  , error = require('./common/error')
+  , CONFIG = require('config')
+  , permission  = require('./permission');
 
 
 
@@ -56,8 +58,64 @@ exports.upload.page = function(req, res) {
   });
 };
 
+/**
+ * 파일을 업로드 한다.
+ * 우선 임시 경로에 업로드하고, 업로드가 완료되면 지정된 위치로 파일을 옮긴다.
+ * @param {http.ServerRequest} req HTTP request
+ * @param {http.ServerResponse} res HTTP response
+ */
 exports.upload.upload = function(req, res) {
-  console.log(req.files.file);
+  var form = new formidable.IncomingForm();
+  form.keepExtensions = true; // 어떤 파일을 업로드했는지 모를 수 있으니 확장자를 남겨둔다.
+  form.hash = 'sha1';
+
+  form.on('fileBegin', function(name, file) {
+    console.log('file upload has begun - user: ' + req.session.user.id + ', file:' + file.name);
+  })
+  .on('progress', function(bytesReceived, bytesExpected) {
+    // console.log('progress: ' + bytesReceived + '/' + bytesExpected);
+  })
+  .on('aborted', function() {
+    console.log('aborted');
+  });
+
+  form.parse(req, function(err, fields, files) {
+    if(err) {
+      console.log('error occurred while uploading file - user: ' + req.session.user.id);
+
+      // TODO error page 렌더링
+      return;
+    }
+
+    console.log('file uploaded - user: ' + req.session.user.id + ', file: ' + files.file.path);
+    mongo.fetchCollection('test', function(err, collection) {
+      // 1. MongoDB에 저장
+      var doc = {
+        file:{
+          name: files.file.name
+          , time: new Date()}
+        , share: permission.share.PRIVATE
+        , user: {own: req.session.user.id}
+      };
+      collection.insert(doc);
+      console.log('the uploaded file is saved in MongoDB - user: ' + req.session.user.id + ', file: ' + files.file.path + ', doc id: ' + doc._id);
+
+      // 2. 임시 경로에 업로드된 파일 이동
+      var targetPath = CONFIG.server.file.upload.path + '/' + req.session.user.id + '/' + doc._id + path.extname(files.file.name);
+      fs.renameSync(files.file.path, targetPath);
+      console.log('the uploaded file is moved from (' + files.file.path + ') to (' + targetPath + ')');
+
+      // 3. MongoDB에 파일 경로 수정
+      collection.update(
+        {_id: doc._id}
+        , {'$set': {'file.path': targetPath}}
+      );
+      console.log('the uploaded file path is updated in MongoDB - user: ' + req.session.user.id + ', doc id: ' + doc._id);
+
+      // 4. 저장된 파일 화면으로 렌더링
+      // TODO res.render()
+    });
+  });
 };
 
 /**
