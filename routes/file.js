@@ -29,7 +29,7 @@ exports.download = function(req, res) {
       
       var filePath = CONFIG.server.file.upload.path + '/' + doc.file.path;
       if(fs.existsSync(filePath)) {
-        console.log('download - fileId: ' + fileId + '(' + CONFIG.server.file.upload.path + doc.file.path + ', ' + doc.share + '), user: ' + JSON.stringify(req.session.user));
+        console.log('Download - fileId: ' + fileId + '(' + CONFIG.server.file.upload.path + doc.file.path + ', ' + doc.share + '), user: ' + JSON.stringify(req.session.user));
         if(permission.share.PUBLIC !== doc.share)
           permission.requireLogin(req, res, function() {
             res.download(filePath, doc.file.name);
@@ -37,7 +37,7 @@ exports.download = function(req, res) {
         else
           res.download(filePath, doc.file.name);
       } else {
-        console.log('download fail (cannot find file in disk) - fileId: ' + fileId + '(' + CONFIG.server.file.upload.path + doc.file.path + ', ' + doc.share + '), user: ' + JSON.stringify(req.session.user));
+        console.log('Download fail (cannot find file in disk) - fileId: ' + fileId + '(' + CONFIG.server.file.upload.path + doc.file.path + ', ' + doc.share + '), user: ' + JSON.stringify(req.session.user));
         res.json(error.CANNOT_FIND_FILE);
         return;
       }
@@ -70,24 +70,25 @@ exports.upload.upload = function(req, res) {
   form.hash = 'sha1';
 
   form.on('fileBegin', function(name, file) {
-    console.log('file upload has begun - user: ' + req.session.user.id + ', file:' + file.name);
+    console.log('File upload has begun - user: ' + req.session.user.id + ', file:' + file.name);
   })
-  .on('progress', function(bytesReceived, bytesExpected) {
-    // console.log('progress: ' + bytesReceived + '/' + bytesExpected);
-  })
+  // for test logging
+  // .on('progress', function(bytesReceived, bytesExpected) {
+  //   console.log('Progress: ' + bytesReceived + '/' + bytesExpected);
+  // })
   .on('aborted', function() {
-    console.log('aborted');
+    console.log('File upload is aborted - user: ' + req.session.user.id);
   });
 
   form.parse(req, function(err, fields, files) {
     if(err) {
-      console.log('error occurred while uploading file - user: ' + req.session.user.id);
+      console.log('Error occurred while uploading file - user: ' + req.session.user.id);
 
       // TODO error page 렌더링
       return;
     }
 
-    console.log('file uploaded - user: ' + req.session.user.id + ', file: ' + files.file.path);
+    console.log('File uploaded - user: ' + req.session.user.id + ', file: ' + files.file.path);
     mongo.fetchCollection('test', function(err, collection) {
       // 1. MongoDB에 저장
       var doc = {
@@ -98,19 +99,19 @@ exports.upload.upload = function(req, res) {
         , user: {own: req.session.user.id}
       };
       collection.insert(doc);
-      console.log('the uploaded file is saved in MongoDB - user: ' + req.session.user.id + ', file: ' + files.file.path + ', doc id: ' + doc._id);
+      console.log('The uploaded file is saved in MongoDB - user: ' + req.session.user.id + ', file: ' + files.file.path + ', doc id: ' + doc._id);
 
       // 2. 임시 경로에 업로드된 파일 이동
       var targetPath = CONFIG.server.file.upload.path + '/' + req.session.user.id + '/' + doc._id + path.extname(files.file.name);
       fs.renameSync(files.file.path, targetPath);
-      console.log('the uploaded file is moved from (' + files.file.path + ') to (' + targetPath + ')');
+      console.log('The uploaded file is moved from (' + files.file.path + ') to (' + targetPath + ')');
 
       // 3. MongoDB에 파일 경로 수정
       collection.update(
         {_id: doc._id}
         , {'$set': {'file.path': targetPath}}
       );
-      console.log('the uploaded file path is updated in MongoDB - user: ' + req.session.user.id + ', doc id: ' + doc._id);
+      console.log('The uploaded file path is updated in MongoDB - user: ' + req.session.user.id + ', doc id: ' + doc._id);
 
       // 4. 저장된 파일 화면으로 렌더링
       // TODO res.render()
@@ -151,7 +152,7 @@ exports.info = function(req, res) {
 exports.list = {};
 
 /**
- * 사용자가 권한을 가지고 있는 모든 종류의 파일을 일부만 가져온다. (종류: own, editable, viewable, ...)
+ * 사용자가 권한을 가지고 있는 모든 종류의 파일을 일부(5개 등 config에 설정된 개수)만 가져온다. (종류: own, editable, viewable, ...)
  * @param {http.ServerRequest} req HTTP request
  * @param {http.ServerResponse} res HTTP response
  * @param {Json} result 화면에 돌려줄 결과, 사용자 아이디가 result.user.id의 값으로 반드시 존재해야 함
