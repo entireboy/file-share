@@ -195,9 +195,10 @@ exports.list.ofUser = function(req, res, result) {
 };
 
 /**
- * 사용자가 소유한 파일을 조회한다. (페이징처리 포함)
+ * 사용자가 소유한 파일을 조회한다. (페이징처리 포함, 요청 format에 따라 응답이 달라짐)
  * @param {http.ServerRequest} req HTTP request
  *   {String} [req.params.userId] 사용자 ID (optional - 주어지지 않는 경우 로그인한 사용자)
+ *   {String} [req.params.format] 요청 format (없음|json|html(default))
  *   {Number} req.query.lastId 이전에 조회된 마지막 파일 ID (이 ID 다음의 파일을 페이지 크기 만큼 조회한다)
  * @param {http.ServerResponse} res HTTP response
  * @author entireboy
@@ -224,74 +225,45 @@ exports.list.ofUser.owns = function(req, res) {
       return;
     }
 
-    res.render('file/fileList', {
-      title: {
-        page: 'Own file list of ' + userId
-        , fileList: 'Own Files'
+    if(req.params.format) {
+      switch(req.params.format)
+      {
+        case 'json':
+          res.json({file: file});
+          break;
+        case 'html':
+        default:
+          res.render('file/fileContent', {file: file}, function(err, html) {
+            delete file['list'];
+            file.html = html;
+            res.json(file);
+          });
+          break;
       }
-      , user: {
-        id: userId
-      }
-      , file: file
-      , page: {
-        path: req.path
-      }
-    });
-  });
-};
-
-/**
- * 사용자가 소유한 파일을 조회한다. (페이징처리 포함, 요청 format에 따라 응답이 달라짐)
- * @param {http.ServerRequest} req HTTP request
- *   {String} [req.params.userId] 사용자 ID (optional - 주어지지 않는 경우 로그인한 사용자)
- *   {String} req.params.format 요청 format (json|html(default))
- *   {Number} req.query.lastId 이전에 조회된 마지막 파일 ID (이 ID 다음의 파일을 페이지 크기 만큼 조회한다)
- * @param {http.ServerResponse} res HTTP response
- * @author entireboy
- */
-exports.list.ofUser.owns.format = function(req, res) {
-  var userId = req.params.userId;
-  if(!userId) {
-    permission.requireLogin(req, res, function() {
-      userId = req.session.user.id;
-    });
-  }
-
-  var opts = {
-    query: {
-      'user.own': userId
     }
-  };
-  if(req.query.lastId) {
-    opts.query['file.time'] = {'$lt': new Date(Number(req.query.lastId))}
-  }
-  retrieveFilesOfUser(opts, function(err, file) {
-    if(err) {
-      res.json(err);
-      return;
-    }
-
-    switch(req.params.format)
-    {
-      case 'json':
-        res.json({file: file});
-        break;
-      case 'html':
-      default:
-        res.render('file/fileContent', {file: file}, function(err, html) {
-          delete file['list'];
-          file.html = html;
-          res.json(file);
-        });
-        break;
+    else {
+      res.render('file/fileList', {
+        title: {
+          page: 'Own file list of ' + userId
+          , fileList: 'Own Files'
+        }
+        , user: {
+          id: userId
+        }
+        , file: file
+        , page: {
+          path: req.path
+        }
+      });
     }
   });
 };
 
 /**
- * 사용자가 수정 가능한 파일을 조회한다. (페이징처리 포함)
+ * 사용자가 수정 가능한 파일을 조회한다. (페이징처리 포함, 요청 format에 따라 응답이 달라짐)
  * @param {http.ServerRequest} req HTTP request
  *   {String} [req.params.userId] 사용자 ID (optional - 주어지지 않는 경우 로그인한 사용자)
+ *   {String} [req.params.format] 요청 format (없음|json|html(default))
  *   {Number} req.query.lastId 이전에 조회된 마지막 파일 ID (이 ID 다음의 파일을 페이지 크기 만큼 조회한다)
  * @param {http.ServerResponse} res HTTP response
  * @author entireboy
@@ -318,74 +290,44 @@ exports.list.ofUser.edits = function(req, res) {
       return;
     }
 
-    res.render('file/fileList', {
-      title: {
-        page: 'Shared file list (editable) of ' + userId
-        , fileList: 'Shared Files (Editable)'
+    if(req.params.format) {
+      switch(req.params.format)
+      {
+        case 'json':
+          res.json({file: file});
+          break;
+        case 'html':
+        default:
+          res.render('file/fileContent', {file: file}, function(err, html) {
+            delete file['list'];
+            file.html = html;
+            res.json(file);
+          });
+          break;
       }
-      , user: {
-        id: userId
-      }
-      , file: file
-      , page: {
-        path: req.path
-      }
-    });
-  });
-};
-
-/**
- * 사용자가 수정 가능한 파일을 조회한다. (페이징처리 포함, 요청 format에 따라 응답이 달라짐)
- * @param {http.ServerRequest} req HTTP request
- *   {String} [req.params.userId] 사용자 ID (optional - 주어지지 않는 경우 로그인한 사용자)
- *   {String} req.params.format 요청 format (json|html(default))
- *   {Number} req.query.lastId 이전에 조회된 마지막 파일 ID (이 ID 다음의 파일을 페이지 크기 만큼 조회한다)
- * @param {http.ServerResponse} res HTTP response
- * @author entireboy
- */
-exports.list.ofUser.edits.format = function(req, res) {
-  var userId = req.params.userId;
-  if(!userId) {
-    permission.requireLogin(req, res, function() {
-      userId = req.session.user.id;
-    });
-  }
-
-  var opts = {
-    query: {
-      'user.edits': userId
-    }
-  };
-  if(req.query.lastId) {
-    opts.query['file.time'] = {'$lt': new Date(Number(req.query.lastId))}
-  }
-  retrieveFilesOfUser(opts, function(err, file) {
-    if(err) {
-      res.json(err);
-      return;
-    }
-
-    switch(req.params.format)
-    {
-      case 'json':
-        res.json({file: file});
-        break;
-      case 'html':
-      default:
-        res.render('file/fileContent', {file: file}, function(err, html) {
-          delete file['list'];
-          file.html = html;
-          res.json(file);
-        });
-        break;
+    } else {
+      res.render('file/fileList', {
+        title: {
+          page: 'Shared file list (editable) of ' + userId
+          , fileList: 'Shared Files (Editable)'
+        }
+        , user: {
+          id: userId
+        }
+        , file: file
+        , page: {
+          path: req.path
+        }
+      });
     }
   });
 };
 
 /**
- * 사용자가 다운로드/보기 가능한 파일을 조회한다. (페이징처리 포함)
+ * 사용자가 다운로드/보기 가능한 파일을 조회한다. (페이징처리 포함, 요청 format에 따라 응답이 달라짐)
  * @param {http.ServerRequest} req HTTP request
  *   {String} [req.params.userId] 사용자 ID (optional - 주어지지 않는 경우 로그인한 사용자)
+ *   {String} [req.params.format] 요청 format (없음|json|html(default))
  *   {Number} req.query.lastId 이전에 조회된 마지막 파일 ID (이 ID 다음의 파일을 페이지 크기 만큼 조회한다)
  * @param {http.ServerResponse} res HTTP response
  * @author entireboy
@@ -412,66 +354,35 @@ exports.list.ofUser.views = function(req, res) {
       return;
     }
 
-    res.render('file/fileList', {
-      title: {
-        page: 'Shared file list (viewable) of ' + userId
-        , fileList: 'Shared Files (Viewable)'
+    if(req.params.format) {
+      switch(req.params.format)
+      {
+        case 'json':
+          res.json({file: file});
+          break;
+        case 'html':
+        default:
+          res.render('file/fileContent', {file: file}, function(err, html) {
+            delete file['list'];
+            file.html = html;
+            res.json(file);
+          });
+          break;
       }
-      , user: {
-        id: userId
-      }
-      , file: file
-      , page: {
-        path: req.path
-      }
-    });
-  });
-};
-
-/**
- * 사용자가 다운로드/보기 가능한 파일을 조회한다. (페이징처리 포함, 요청 format에 따라 응답이 달라짐)
- * @param {http.ServerRequest} req HTTP request
- *   {String} [req.params.userId] 사용자 ID (optional - 주어지지 않는 경우 로그인한 사용자)
- *   {String} req.params.format 요청 format (json|html(default))
- *   {Number} req.query.lastId 이전에 조회된 마지막 파일 ID (이 ID 다음의 파일을 페이지 크기 만큼 조회한다)
- * @param {http.ServerResponse} res HTTP response
- * @author entireboy
- */
-exports.list.ofUser.views.format = function(req, res) {
-  var userId = req.params.userId;
-  if(!userId) {
-    permission.requireLogin(req, res, function() {
-      userId = req.session.user.id;
-    });
-  }
-
-  var opts = {
-    query: {
-      'user.views': userId
-    }
-  };
-  if(req.query.lastId) {
-    opts.query['file.time'] = {'$lt': new Date(Number(req.query.lastId))}
-  }
-  retrieveFilesOfUser(opts, function(err, file) {
-    if(err) {
-      res.json(err);
-      return;
-    }
-
-    switch(req.params.format)
-    {
-      case 'json':
-        res.json({file: file});
-        break;
-      case 'html':
-      default:
-        res.render('file/fileContent', {file: file}, function(err, html) {
-          delete file['list'];
-          file.html = html;
-          res.json(file);
-        });
-        break;
+    } else {
+      res.render('file/fileList', {
+        title: {
+          page: 'Shared file list (viewable) of ' + userId
+          , fileList: 'Shared Files (Viewable)'
+        }
+        , user: {
+          id: userId
+        }
+        , file: file
+        , page: {
+          path: req.path
+        }
+      });
     }
   });
 };
