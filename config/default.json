@@ -8,7 +8,6 @@
 		"autoReconnect": true,
 		"database": "file-share",
 		"collection": {
-			"session": "sessions",
 			"user": "user",
 			"file": "file"
 		}
