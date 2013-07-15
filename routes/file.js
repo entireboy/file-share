@@ -1,5 +1,3 @@
-var FILE_COLLECTION = 'file';
-
 var dateFormat = require('./common/dateFormat')
   , mongo = require('./common/mongo')
   , fs = require('fs')
@@ -9,6 +7,8 @@ var dateFormat = require('./common/dateFormat')
   , CONFIG = require('config')
   , permission  = require('./permission');
 
+
+var FILE_COLLECTION = CONFIG.mongodb.collection.file;
 
 
 /**
