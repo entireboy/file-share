@@ -1,11 +1,14 @@
-var FILE_COLLECTION = 'file';
+var dateFormat = require('./common/dateFormat')
+  , mongo = require('./common/mongo')
+  , fs = require('fs')
+  , path = require('path')
+  , formidable = require('formidable')
+  , error = require('./common/error')
+  , CONFIG = require('config')
+  , permission  = require('./permission');
 
-var dateFormat = require('./common/dateFormat');
-var mongo = require('./common/mongo');
-var fs = require('fs');
-var error = require('./common/error');
-var CONFIG = require('config');
-var permission  = require('./permission');
+
+var FILE_COLLECTION = CONFIG.mongodb.collection.file;
 
 
 

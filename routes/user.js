@@ -1,9 +1,9 @@
-var USER_COLLECTION = 'user';
+var mongo = require('./common/mongo')
+  , error = require('./common/error')
+  , file = require('./file')
+  , CONFIG = require('config');
 
-var mongo = require('./common/mongo');
-var error = require('./common/error');
-var file = require('./file');
-var CONFIG = require('config');
+var USER_COLLECTION = CONFIG.mongodb.collection.user;
 
 
 // ================================================

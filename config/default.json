@@ -6,7 +6,12 @@
 		"password": "",
 		"poolSize": 5,
 		"autoReconnect": true,
-		"database": "file-share"
+		"database": "file-share",
+		"collection": {
+			"session": "sessions",
+			"user": "user",
+			"file": "file"
+		}
 	},
 	"secure": {
 		"session": {
