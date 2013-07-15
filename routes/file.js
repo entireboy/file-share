@@ -229,7 +229,7 @@ exports.list.ofUser.owns = function(req, res) {
       switch(req.params.format)
       {
         case 'json':
-          res.json({file: file});
+          res.json(file);
           break;
         case 'html':
         default:
@@ -294,7 +294,7 @@ exports.list.ofUser.edits = function(req, res) {
       switch(req.params.format)
       {
         case 'json':
-          res.json({file: file});
+          res.json(file);
           break;
         case 'html':
         default:
@@ -358,7 +358,7 @@ exports.list.ofUser.views = function(req, res) {
       switch(req.params.format)
       {
         case 'json':
-          res.json({file: file});
+          res.json(file);
           break;
         case 'html':
         default:
