@@ -17,7 +17,8 @@
           <h2><%= file.name %></h2>
         </div>
         <div class="meta">
-          파일 사이즈 등등
+          Size: <%= file.size %> Bytes<br />
+          Type: <%= file.type %>
         </div>
         <div>
           <a href="/file/<%= file.id %>" class="btn">다운로드</a>
