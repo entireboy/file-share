@@ -89,7 +89,7 @@ exports.upload.upload = function(req, res) {
     }
 
     console.log('File uploaded - user: ' + req.session.user.id + ', file: ' + files.file.path);
-    mongo.fetchCollection('test', function(err, collection) {
+    mongo.fetchCollection(FILE_COLLECTION, function(err, collection) {
       // 1. MongoDB에 저장
       var doc = {
         file:{
@@ -123,6 +123,7 @@ exports.upload.upload = function(req, res) {
  * 요청한 파일(req.params.fileId)의 정보를 조회한다. 파일의 공유 권한에 따라 로그인이 필요할 수 있다.
  * @param {http.ServerRequest} req HTTP request
  *   {String} req.params.userId 사용자 ID
+ *   {String} [req.params.format] 요청 format (json|html(default))
  * @param {http.ServerResponse} res HTTP response
  * @author entireboy
  */
@@ -136,7 +137,10 @@ exports.info = function(req, res) {
       }
       
       var result = {};
+      result.title = {};
+      result.title.page = 'File info: ' + doc.file.name;
       result.file = {};
+      result.file.id = fileId;
       result.file.name = doc.file.name;
       result.file.uploaded = dateFormat.toDateTime(doc.file.time);
       result.user = {};
@@ -144,7 +148,18 @@ exports.info = function(req, res) {
       result.user.editors = doc.user.edits;
       result.user.viewers = doc.user.views;
       result.now = dateFormat.toDateTime(new Date());
-      res.json(result);
+
+      var format = req.params.format || 'html';
+      switch(format)
+      {
+        case 'json':
+          res.json(result);
+          break;
+        case 'html':
+        default:
+          res.render('file/fileInfo', result);
+          break;
+      }
     });
   });
 };
