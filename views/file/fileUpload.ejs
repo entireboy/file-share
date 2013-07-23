@@ -16,8 +16,9 @@
         </div>
         <div>
           <form action="/file/upload" method="POST" enctype="multipart/form-data">
-            <input type="file" name="file" />
-            <input type="submit" value="upload" />
+            <input type="file" name="file" title="Select a file" />
+            <input type="submit" value="Upload" class="btn" />
+            <input type="button" value="Cancel" class="btn" onClick="history.back();" />
           </form>
         </div>
     </div>
@@ -30,5 +31,11 @@
 
   <!-- Placed at the end of the document so the pages load faster -->
   <!-- <script src="/js/bootstrap.min.js"></script> -->
+  <script src="/js/bootstrap.file-input.js"></script>
+  <script type="text/javascript">
+    $(document).ready(function() {
+      $('input[type=file]').bootstrapFileInput();
+    });
+  </script>
 </body>
 </html>
