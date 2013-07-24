@@ -20,6 +20,7 @@ var mongoServer = new mongodb.Server(
   CONFIG.mongodb.host, CONFIG.mongodb.port,
   {auto_reconnect:CONFIG.mongodb.autoReconnect, poolSize:CONFIG.mongodb.pollSize});
 module.db = {};
+module.db.ObjectID = mongodb.ObjectID;
 module.db.fileShare = new mongodb.Db(CONFIG.mongodb.database, mongoServer, {safe:false});
 
 // HTTP server setting
