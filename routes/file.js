@@ -116,7 +116,7 @@ exports.upload.upload = function(req, res) {
       console.log('The uploaded file path is updated in MongoDB - user: ' + req.session.user.id + ', doc id: ' + doc._id);
 
       // 4. 저장된 파일 화면으로 렌더링
-      // 지금은 업로드한 파일 정보 페이지로 넘기지만,
+      // TODO 지금은 업로드한 파일 정보 페이지로 넘기지만,
       // 추후에는 업로드 후 json으로 업로드뢴 정보만 넘겨 ajax로 동작하도록 수정 예정
       // res.json(doc);
       res.redirect('/file/' + doc._id + '/info');
@@ -146,7 +146,8 @@ exports.info = function(req, res) {
       result.title.page = 'File info: ' + doc.file.name;
       result.file = {};
       result.file.id = fileId;
-      result.file.size = doc.file.size;
+      result.file.originalSize = doc.file.size.numberFormat();
+      result.file.simpleSize = doc.file.size.numberFormat({unit:'KMG'});
       result.file.name = doc.file.name;
       result.file.type = doc.file.type;
       result.file.uploaded = dateFormat.toDateTime(doc.file.time);
