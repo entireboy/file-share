@@ -15,10 +15,9 @@
           <h2>Select a file to upload</h2>
         </div>
         <div>
-          <form action="/file/upload" method="POST" enctype="multipart/form-data">
+          <form id="uploadForm" action="/file/upload" method="POST" enctype="multipart/form-data">
             <input type="file" name="file" title="Select a file" />
-            <input type="submit" value="Upload" class="btn" />
-            <input type="button" value="Cancel" class="btn" onClick="history.back();" />
+            <button type="submit" class="btn">Upload <i id="uploadingSpinner" class=""></i></button>
           </form>
         </div>
     </div>
@@ -34,7 +33,13 @@
   <script src="/js/bootstrap.file-input.js"></script>
   <script type="text/javascript">
     $(document).ready(function() {
+      // file upload 스타일 변경
       $('input[type=file]').bootstrapFileInput();
+
+      $('#uploadForm').submit(function() {
+        $('#uploadingSpinner').addClass('icon-refresh icon-spin');
+        $(this).children('[type=submit]').attr('disabled', 'disabled');
+      });
     });
   </script>
 </body>
