@@ -13,7 +13,7 @@
   <div class="container">
     <div class="row fileInfo">
         <div class="name">
-          <p><i class="icon-file-alt icon-4x icon-border"></i></p>
+          <p><a href="/file/<%= file.id %>"><i class="icon-file-alt icon-4x icon-border"></i></a></p>
           <h2><%= file.name %></h2>
         </div>
         <div class="meta">
@@ -21,7 +21,7 @@
           Type: <%= file.type %>
         </div>
         <div>
-          <a href="/file/<%= file.id %>" class="btn">다운로드</a>
+          <a href="/file/<%= file.id %>" class="btn">Download</a>
         </div>
     </div>
   </div>
