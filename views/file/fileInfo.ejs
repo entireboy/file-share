@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title><%= title.page %></title>
+  <link href="/css/bootstrap.min.css" rel="stylesheet" media="screen">
+  <link href="/css/bootstrap-responsive.min.css" rel="stylesheet" media="screen">
+  <link href="/css/font-awesome.min.css" rel="stylesheet" media="screen">
+  <link href="/css/style.css" rel="stylesheet" />
+  <link href="/css/file.css" rel="stylesheet" />
+</head>
+<body>
+  <% include ../common/menu %>
+  <div class="container">
+    <div class="row fileInfo">
+        <div class="name">
+          <p><a href="/file/<%= file.id %>"><i class="icon-file-alt icon-4x icon-border"></i></a></p>
+          <h2><%= file.name %></h2>
+        </div>
+        <div class="meta">
+          Size: <%= file.simpleSize %>B (<%= file.originalSize %> Bytes)<br />
+          Type: <%= file.type %>
+        </div>
+        <div>
+          <a href="/file/<%= file.id %>" class="btn">Download</a>
+        </div>
+    </div>
+  </div>
+
+  <hr />
+  <footer>
+    <% include ../common/footer %>
+  </footer>
+
+  <!-- Placed at the end of the document so the pages load faster -->
+  <!-- <script src="/js/bootstrap.min.js"></script> -->
+</body>
+</html>

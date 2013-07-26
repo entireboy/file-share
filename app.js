@@ -3,6 +3,7 @@
  * Module dependencies.
  */
 
+require('./routes/common/common.js');
 var express = require('express')
   , routes = require('./routes')
   , http = require('http')
@@ -30,7 +31,11 @@ app.configure(function(){
   app.set('view engine', 'ejs');
   app.use(express.favicon());
   app.use(express.logger('dev'));
-  app.use(express.bodyParser({uploadDir: CONFIG.server.file.upload.path}));
+
+  // 파일 업로드는 bodyParser 대신 formidable을 직접 사용
+  app.use(express.json());
+  app.use(express.urlencoded());
+
   app.use(express.methodOverride());
   app.use(express.cookieParser(CONFIG.secure.cookie.secret));
   app.use(express.session({
@@ -78,25 +83,19 @@ app.get('/login', routes.user.login.page);
 app.post('/login', routes.user.login.login);
 app.all('/logout', routes.user.login.logout);
 
-app.get('/owns', routes.file.list.ofUser.owns);
-app.get('/owns.:format', routes.file.list.ofUser.owns.format);
-app.get('/edits', routes.file.list.ofUser.edits);
-app.get('/edits.:format', routes.file.list.ofUser.edits.format);
-app.get('/views', routes.file.list.ofUser.views);
-app.get('/views.:format', routes.file.list.ofUser.views.format);
+app.get('/owns.:format?', routes.file.list.ofUser.owns);
+app.get('/edits.:format?', routes.file.list.ofUser.edits);
+app.get('/views.:format?', routes.file.list.ofUser.views);
 
 app.get('/user/:userId', routes.user.info);
-app.get('/user/:userId/file/owns', routes.file.list.ofUser.owns);
-app.get('/user/:userId/file/owns.:format', routes.file.list.ofUser.owns.format);
-app.get('/user/:userId/file/edits', routes.file.list.ofUser.edits);
-app.get('/user/:userId/file/edits.:format', routes.file.list.ofUser.edits.format);
-app.get('/user/:userId/file/views', routes.file.list.ofUser.views);
-app.get('/user/:userId/file/views.:format', routes.file.list.ofUser.views.format);
+app.get('/user/:userId/file/owns.:format?', routes.file.list.ofUser.owns);
+app.get('/user/:userId/file/edits.:format?', routes.file.list.ofUser.edits);
+app.get('/user/:userId/file/views.:format?', routes.file.list.ofUser.views);
 
 app.get('/file/upload', permission.requireLogin, routes.file.upload.page);
 app.post('/file/upload', permission.requireLogin, routes.file.upload.upload);
 app.get('/file/:fileId', routes.file.download);
-app.get('/file/info/:fileId', permission.requireLogin, routes.file.info);
+app.get('/file/:fileId/info.:format?', permission.requireLogin, routes.file.info);
 
 
 

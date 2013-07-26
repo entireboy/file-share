@@ -11,7 +11,6 @@ var dateFormat = require('./common/dateFormat')
 var FILE_COLLECTION = CONFIG.mongodb.collection.file;
 
 
-
 /**
  * 요청한 파일(req.params.fileId)을 다운로드한다. 파일의 공유 설정과 접근 권한에 따라 로그인이 필요하거나 다운로드가 불가능할 수 있다.
  * @param {http.ServerRequest} req HTTP request
@@ -30,7 +29,7 @@ exports.download = function(req, res) {
       
       var filePath = CONFIG.server.file.upload.path + '/' + doc.file.path;
       if(fs.existsSync(filePath)) {
-        console.log('download - fileId: ' + fileId + '(' + CONFIG.server.file.upload.path + doc.file.path + ', ' + doc.share + '), user: ' + JSON.stringify(req.session.user));
+        console.log('Download - fileId: ' + fileId + '(' + CONFIG.server.file.upload.path + doc.file.path + ', ' + doc.share + '), user: ' + JSON.stringify(req.session.user));
         if(permission.share.PUBLIC !== doc.share)
           permission.requireLogin(req, res, function() {
             res.download(filePath, doc.file.name);
@@ -38,7 +37,7 @@ exports.download = function(req, res) {
         else
           res.download(filePath, doc.file.name);
       } else {
-        console.log('download fail (cannot find file in disk) - fileId: ' + fileId + '(' + CONFIG.server.file.upload.path + doc.file.path + ', ' + doc.share + '), user: ' + JSON.stringify(req.session.user));
+        console.log('Download fail (cannot find file in disk) - fileId: ' + fileId + '(' + CONFIG.server.file.upload.path + doc.file.path + ', ' + doc.share + '), user: ' + JSON.stringify(req.session.user));
         res.json(error.CANNOT_FIND_FILE);
         return;
       }
@@ -59,14 +58,76 @@ exports.upload.page = function(req, res) {
   });
 };
 
+/**
+ * 파일을 업로드 한다.
+ * 우선 임시 경로에 업로드하고, 업로드가 완료되면 지정된 위치로 파일을 옮긴다.
+ * @param {http.ServerRequest} req HTTP request
+ * @param {http.ServerResponse} res HTTP response
+ */
 exports.upload.upload = function(req, res) {
-  console.log(req.files.file);
+  var form = new formidable.IncomingForm();
+  form.keepExtensions = true; // 어떤 파일을 업로드했는지 모를 수 있으니 확장자를 남겨둔다.
+  form.hash = 'sha1';
+
+  form.on('fileBegin', function(name, file) {
+    console.log('File upload has begun - user: ' + req.session.user.id + ', file:' + file.name);
+  })
+  // for test logging
+  // .on('progress', function(bytesReceived, bytesExpected) {
+  //   console.log('Progress: ' + bytesReceived + '/' + bytesExpected);
+  // })
+  .on('aborted', function() {
+    console.log('File upload is aborted - user: ' + req.session.user.id);
+  });
+
+  form.parse(req, function(err, fields, files) {
+    if(err) {
+      console.log('Error occurred while uploading file - user: ' + req.session.user.id);
+      throw new Error('Error occurred while uploading file');
+    }
+
+    console.log('File uploaded - user: ' + req.session.user.id + ', file: ' + files.file.path);
+    mongo.fetchCollection(FILE_COLLECTION, function(err, collection) {
+      // 1. MongoDB에 저장
+      var doc = {
+        file:{
+          name: files.file.name
+          , size: files.file.size
+          , type: files.file.type
+          , time: new Date()}
+        , share: permission.share.PRIVATE
+        , user: {own: req.session.user.id}
+      };
+      collection.insert(doc);
+      console.log('The uploaded file is saved in MongoDB - user: ' + req.session.user.id + ', file: ' + files.file.path + ', doc id: ' + doc._id);
+
+      // 2. 임시 경로에 업로드된 파일 이동
+      var targetFile = req.session.user.id + '/' + doc._id + path.extname(files.file.name);
+      var targetPath = CONFIG.server.file.upload.path + '/' + targetFile;
+      fs.renameSync(files.file.path, targetPath);
+      console.log('The uploaded file is moved from (' + files.file.path + ') to (' + targetPath + ')');
+
+      // 3. MongoDB에 파일 경로 수정
+      collection.update(
+        {_id: doc._id}
+        , {'$set': {'file.path': targetFile}}
+      );
+      console.log('The uploaded file path is updated in MongoDB - user: ' + req.session.user.id + ', doc id: ' + doc._id);
+
+      // 4. 저장된 파일 화면으로 렌더링
+      // TODO 지금은 업로드한 파일 정보 페이지로 넘기지만,
+      // 추후에는 업로드 후 json으로 업로드뢴 정보만 넘겨 ajax로 동작하도록 수정 예정
+      // res.json(doc);
+      res.redirect('/file/' + doc._id + '/info');
+    });
+  });
 };
 
 /**
  * 요청한 파일(req.params.fileId)의 정보를 조회한다. 파일의 공유 권한에 따라 로그인이 필요할 수 있다.
  * @param {http.ServerRequest} req HTTP request
  *   {String} req.params.userId 사용자 ID
+ *   {String} [req.params.format] 요청 format (json|html(default))
  * @param {http.ServerResponse} res HTTP response
  * @author entireboy
  */
@@ -80,15 +141,32 @@ exports.info = function(req, res) {
       }
       
       var result = {};
+      result.title = {};
+      result.title.page = 'File info: ' + doc.file.name;
       result.file = {};
+      result.file.id = fileId;
+      result.file.originalSize = doc.file.size.numberFormat();
+      result.file.simpleSize = doc.file.size.numberFormat({unit:'KMG'});
       result.file.name = doc.file.name;
+      result.file.type = doc.file.type;
       result.file.uploaded = dateFormat.toDateTime(doc.file.time);
       result.user = {};
       result.user.owner = doc.user.own;
       result.user.editors = doc.user.edits;
       result.user.viewers = doc.user.views;
       result.now = dateFormat.toDateTime(new Date());
-      res.json(result);
+
+      var format = req.params.format || 'html';
+      switch(format)
+      {
+        case 'json':
+          res.json(result);
+          break;
+        case 'html':
+        default:
+          res.render('file/fileInfo', result);
+          break;
+      }
     });
   });
 };
@@ -96,7 +174,7 @@ exports.info = function(req, res) {
 exports.list = {};
 
 /**
- * 사용자가 권한을 가지고 있는 모든 종류의 파일을 일부만 가져온다. (종류: own, editable, viewable, ...)
+ * 사용자가 권한을 가지고 있는 모든 종류의 파일을 일부(5개 등 config에 설정된 개수)만 가져온다. (종류: own, editable, viewable, ...)
  * @param {http.ServerRequest} req HTTP request
  * @param {http.ServerResponse} res HTTP response
  * @param {Json} result 화면에 돌려줄 결과, 사용자 아이디가 result.user.id의 값으로 반드시 존재해야 함
@@ -139,9 +217,10 @@ exports.list.ofUser = function(req, res, result) {
 };
 
 /**
- * 사용자가 소유한 파일을 조회한다. (페이징처리 포함)
+ * 사용자가 소유한 파일을 조회한다. (페이징처리 포함, 요청 format에 따라 응답이 달라짐)
  * @param {http.ServerRequest} req HTTP request
  *   {String} [req.params.userId] 사용자 ID (optional - 주어지지 않는 경우 로그인한 사용자)
+ *   {String} [req.params.format] 요청 format (없음|json|html(default))
  *   {Number} req.query.lastId 이전에 조회된 마지막 파일 ID (이 ID 다음의 파일을 페이지 크기 만큼 조회한다)
  * @param {http.ServerResponse} res HTTP response
  * @author entireboy
@@ -168,74 +247,45 @@ exports.list.ofUser.owns = function(req, res) {
       return;
     }
 
-    res.render('file/fileList', {
-      title: {
-        page: 'Own file list of ' + userId
-        , fileList: 'Own Files'
-      }
-      , user: {
-        id: userId
-      }
-      , file: file
-      , page: {
-        path: req.path
-      }
-    });
-  });
-};
-
-/**
- * 사용자가 소유한 파일을 조회한다. (페이징처리 포함, 요청 format에 따라 응답이 달라짐)
- * @param {http.ServerRequest} req HTTP request
- *   {String} [req.params.userId] 사용자 ID (optional - 주어지지 않는 경우 로그인한 사용자)
- *   {String} req.params.format 요청 format (json|html(default))
- *   {Number} req.query.lastId 이전에 조회된 마지막 파일 ID (이 ID 다음의 파일을 페이지 크기 만큼 조회한다)
- * @param {http.ServerResponse} res HTTP response
- * @author entireboy
- */
-exports.list.ofUser.owns.format = function(req, res) {
-  var userId = req.params.userId;
-  if(!userId) {
-    permission.requireLogin(req, res, function() {
-      userId = req.session.user.id;
-    });
-  }
-
-  var opts = {
-    query: {
-      'user.own': userId
-    }
-  };
-  if(req.query.lastId) {
-    opts.query['file.time'] = {'$lt': new Date(Number(req.query.lastId))}
-  }
-  retrieveFilesOfUser(opts, function(err, file) {
-    if(err) {
-      res.json(err);
-      return;
-    }
-
-    switch(req.params.format)
-    {
-      case 'json':
-        res.json({file: file});
-        break;
-      case 'html':
-      default:
-        res.render('file/fileContent', {file: file}, function(err, html) {
-          delete file['list'];
-          file.html = html;
+    if(req.params.format) {
+      switch(req.params.format)
+      {
+        case 'json':
           res.json(file);
-        });
-        break;
+          break;
+        case 'html':
+        default:
+          res.render('file/fileContent', {file: file}, function(err, html) {
+            delete file['list'];
+            file.html = html;
+            res.json(file);
+          });
+          break;
+      }
+    }
+    else {
+      res.render('file/fileList', {
+        title: {
+          page: 'Own file list of ' + userId
+          , fileList: 'Own Files'
+        }
+        , user: {
+          id: userId
+        }
+        , file: file
+        , page: {
+          path: req.path
+        }
+      });
     }
   });
 };
 
 /**
- * 사용자가 수정 가능한 파일을 조회한다. (페이징처리 포함)
+ * 사용자가 수정 가능한 파일을 조회한다. (페이징처리 포함, 요청 format에 따라 응답이 달라짐)
  * @param {http.ServerRequest} req HTTP request
  *   {String} [req.params.userId] 사용자 ID (optional - 주어지지 않는 경우 로그인한 사용자)
+ *   {String} [req.params.format] 요청 format (없음|json|html(default))
  *   {Number} req.query.lastId 이전에 조회된 마지막 파일 ID (이 ID 다음의 파일을 페이지 크기 만큼 조회한다)
  * @param {http.ServerResponse} res HTTP response
  * @author entireboy
@@ -262,74 +312,44 @@ exports.list.ofUser.edits = function(req, res) {
       return;
     }
 
-    res.render('file/fileList', {
-      title: {
-        page: 'Shared file list (editable) of ' + userId
-        , fileList: 'Shared Files (Editable)'
-      }
-      , user: {
-        id: userId
-      }
-      , file: file
-      , page: {
-        path: req.path
-      }
-    });
-  });
-};
-
-/**
- * 사용자가 수정 가능한 파일을 조회한다. (페이징처리 포함, 요청 format에 따라 응답이 달라짐)
- * @param {http.ServerRequest} req HTTP request
- *   {String} [req.params.userId] 사용자 ID (optional - 주어지지 않는 경우 로그인한 사용자)
- *   {String} req.params.format 요청 format (json|html(default))
- *   {Number} req.query.lastId 이전에 조회된 마지막 파일 ID (이 ID 다음의 파일을 페이지 크기 만큼 조회한다)
- * @param {http.ServerResponse} res HTTP response
- * @author entireboy
- */
-exports.list.ofUser.edits.format = function(req, res) {
-  var userId = req.params.userId;
-  if(!userId) {
-    permission.requireLogin(req, res, function() {
-      userId = req.session.user.id;
-    });
-  }
-
-  var opts = {
-    query: {
-      'user.edits': userId
-    }
-  };
-  if(req.query.lastId) {
-    opts.query['file.time'] = {'$lt': new Date(Number(req.query.lastId))}
-  }
-  retrieveFilesOfUser(opts, function(err, file) {
-    if(err) {
-      res.json(err);
-      return;
-    }
-
-    switch(req.params.format)
-    {
-      case 'json':
-        res.json({file: file});
-        break;
-      case 'html':
-      default:
-        res.render('file/fileContent', {file: file}, function(err, html) {
-          delete file['list'];
-          file.html = html;
+    if(req.params.format) {
+      switch(req.params.format)
+      {
+        case 'json':
           res.json(file);
-        });
-        break;
+          break;
+        case 'html':
+        default:
+          res.render('file/fileContent', {file: file}, function(err, html) {
+            delete file['list'];
+            file.html = html;
+            res.json(file);
+          });
+          break;
+      }
+    } else {
+      res.render('file/fileList', {
+        title: {
+          page: 'Shared file list (editable) of ' + userId
+          , fileList: 'Shared Files (Editable)'
+        }
+        , user: {
+          id: userId
+        }
+        , file: file
+        , page: {
+          path: req.path
+        }
+      });
     }
   });
 };
 
 /**
- * 사용자가 다운로드/보기 가능한 파일을 조회한다. (페이징처리 포함)
+ * 사용자가 다운로드/보기 가능한 파일을 조회한다. (페이징처리 포함, 요청 format에 따라 응답이 달라짐)
  * @param {http.ServerRequest} req HTTP request
  *   {String} [req.params.userId] 사용자 ID (optional - 주어지지 않는 경우 로그인한 사용자)
+ *   {String} [req.params.format] 요청 format (없음|json|html(default))
  *   {Number} req.query.lastId 이전에 조회된 마지막 파일 ID (이 ID 다음의 파일을 페이지 크기 만큼 조회한다)
  * @param {http.ServerResponse} res HTTP response
  * @author entireboy
@@ -356,66 +376,35 @@ exports.list.ofUser.views = function(req, res) {
       return;
     }
 
-    res.render('file/fileList', {
-      title: {
-        page: 'Shared file list (viewable) of ' + userId
-        , fileList: 'Shared Files (Viewable)'
-      }
-      , user: {
-        id: userId
-      }
-      , file: file
-      , page: {
-        path: req.path
-      }
-    });
-  });
-};
-
-/**
- * 사용자가 다운로드/보기 가능한 파일을 조회한다. (페이징처리 포함, 요청 format에 따라 응답이 달라짐)
- * @param {http.ServerRequest} req HTTP request
- *   {String} [req.params.userId] 사용자 ID (optional - 주어지지 않는 경우 로그인한 사용자)
- *   {String} req.params.format 요청 format (json|html(default))
- *   {Number} req.query.lastId 이전에 조회된 마지막 파일 ID (이 ID 다음의 파일을 페이지 크기 만큼 조회한다)
- * @param {http.ServerResponse} res HTTP response
- * @author entireboy
- */
-exports.list.ofUser.views.format = function(req, res) {
-  var userId = req.params.userId;
-  if(!userId) {
-    permission.requireLogin(req, res, function() {
-      userId = req.session.user.id;
-    });
-  }
-
-  var opts = {
-    query: {
-      'user.views': userId
-    }
-  };
-  if(req.query.lastId) {
-    opts.query['file.time'] = {'$lt': new Date(Number(req.query.lastId))}
-  }
-  retrieveFilesOfUser(opts, function(err, file) {
-    if(err) {
-      res.json(err);
-      return;
-    }
-
-    switch(req.params.format)
-    {
-      case 'json':
-        res.json({file: file});
-        break;
-      case 'html':
-      default:
-        res.render('file/fileContent', {file: file}, function(err, html) {
-          delete file['list'];
-          file.html = html;
+    if(req.params.format) {
+      switch(req.params.format)
+      {
+        case 'json':
           res.json(file);
-        });
-        break;
+          break;
+        case 'html':
+        default:
+          res.render('file/fileContent', {file: file}, function(err, html) {
+            delete file['list'];
+            file.html = html;
+            res.json(file);
+          });
+          break;
+      }
+    } else {
+      res.render('file/fileList', {
+        title: {
+          page: 'Shared file list (viewable) of ' + userId
+          , fileList: 'Shared Files (Viewable)'
+        }
+        , user: {
+          id: userId
+        }
+        , file: file
+        , page: {
+          path: req.path
+        }
+      });
     }
   });
 };
