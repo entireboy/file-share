@@ -15,6 +15,11 @@ module.exports.save = function(collection, key, datas) {
   var db = new mongodb.Db(CONFIG.mongodb.database, mongoServer,{safe:true});
 
   db.open(function(err, db) {
+    if(err) {
+      console.log(err);
+      return;
+    }
+    
     db.collection(collection, function(err, collection) {
       if(err) {
         console.log(err);
