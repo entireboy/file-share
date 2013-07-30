@@ -171,6 +171,16 @@ exports.info = function(req, res) {
   });
 };
 
+exports.share = function(req, res) {
+  res.render('file/fileShare', {
+    title: {
+      page: 'Share file'
+    }, file: {
+      name:'share test file'
+    }
+  });
+};
+
 exports.list = {};
 
 /**

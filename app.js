@@ -96,6 +96,7 @@ app.get('/file/upload', permission.requireLogin, routes.file.upload.page);
 app.post('/file/upload', permission.requireLogin, routes.file.upload.upload);
 app.get('/file/:fileId', routes.file.download);
 app.get('/file/:fileId/info.:format?', permission.requireLogin, routes.file.info);
+app.get('/file/:fileId/share', permission.requireLogin, routes.file.share);
 
 
 
