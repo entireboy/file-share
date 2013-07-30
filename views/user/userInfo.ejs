@@ -33,22 +33,6 @@
           <% } %>
         </div>
         <div class="row fileList">
-          <h2>Shared Files (Editable)</h2>
-          <% if(file.edits && 0 < file.edits.length) { %>
-            <% file.edits.forEach(function(edit, i) { %>
-              <% if(file.listSize != i) { %>
-                <div class="fileListBody">
-                  <h3><a href="/file/<%= edit.id %>"><%= edit.name %></a></h3>
-                  <%= edit.uploaded %>
-                </div>
-              <% } %>
-            <% }) %>
-            <% if(file.listSize < file.edits.length) { %>
-              <div><a href="/user/<%= user.id %>/file/edits">more</a></div>
-            <% } %>
-          <% } %>
-        </div>
-        <div class="row fileList">
           <h2>Shared Files (Viewable)</h2>
           <% if(file.views && 0 < file.views.length) { %>
             <% file.views.forEach(function(view, i) { %>

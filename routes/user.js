@@ -15,7 +15,6 @@ var USER_COLLECTION = CONFIG.mongodb.collection.user;
  *   - 사용자 일반 정보
  *   - 사용자의 파일
  *      + 소유한 파일 (own)
- *      + 수정 가능 파일 (edit)
  *      + 사용/다운로드 가능 파일 (view)
  * @param {http.ServerRequest} req HTTP request
  *   {String} req.params.userId 사용자 ID
@@ -39,7 +38,6 @@ exports.info = function(req, res) {
       result.file = {};
       result.file.listSize = CONFIG.server.file.listSize.userInfo;
       result.file.owns = [];
-      result.file.edits = [];
       result.file.views = [];
 
       // 사용자가 권한을 가지고 있는 파일 목록을 구해서 반환한다.

@@ -25,3 +25,9 @@ exports.requireLogin = function(req, res, next) {
     res.redirect('/login' + user.login.makeRedirectUrl(req.originalUrl));
   }
 };
+
+exports.requireOwn = function(req, res, next) {
+console.log('before login check');
+  exports.requireLogin(req, res, next);
+console.log('after login check');
+};
