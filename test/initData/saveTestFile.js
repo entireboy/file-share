@@ -5,7 +5,7 @@ var files = [
   {_id:new ObjectID('000000000000000000011111')
     , file:{name:'test.jpg', size:318601, path:'/u1/test.jpg', type:'image/jpeg', time:new Date(Date.now() + 10)}
     , share:'PRIVATE'
-    , user:{own:'u1', edits:['u2']}
+    , user:{own:'u1', views:['u2']}
   } , {_id:new ObjectID('000000000000000000022222')
     , file:{name:'test.mp4', size:2492609, path:'/u1/test.mp4', type:'video/mp4', time:new Date(Date.now() + 20)}
     , share:'PRIVATE'
@@ -21,7 +21,7 @@ var files = [
   } , {_id:new ObjectID('000000000000000000055555')
     , file:{name:'test2.png', size:220295, path:'/u1/test2.png', type:'image/png', time:new Date(Date.now() + 50)}
     , share:'PUBLIC'
-    , user:{own:'u1', edits:['u2']}
+    , user:{own:'u1', views:['u2']}
   }
 ];
 
