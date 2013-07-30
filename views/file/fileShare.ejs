@@ -13,7 +13,7 @@
     <div class="row-fluid">
       <div class="span10 offset1">
         <div class="row">
-          <h2>Share file '<%= file.name %>'</h2>
+          <h2>Share file '<a href="/file/<%= file.id %>/info"><%= file.name %></a>'</h2>
         </div>
         <div class="row">
           <div class="span6">
@@ -23,7 +23,7 @@
             <div class="row">
               <label>User to share with edit permission</label>
               <div class="input-append">
-                <input type="text" />
+                <input type="text" size="40" />
                 <button class="btn">추가 <i class="icon-plus"></i></button>
               </div>
             </div>

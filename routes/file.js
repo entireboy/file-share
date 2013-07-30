@@ -176,6 +176,7 @@ exports.share = function(req, res) {
       page: 'Share file'
     }, file: {
       name:'share test file'
+      , id: '000000000000000000011111'
     }
   });
 };
