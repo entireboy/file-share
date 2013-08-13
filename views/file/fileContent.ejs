@@ -1,8 +1,8 @@
 <% if(file.list && 0 < file.list.length) { %>
   <% file.list.forEach(function(f, i) { %>
     <div class="fileListBody">
-      <h3><a href="/file/<%= f.id %>"><%= f.name %></a></h3>
-      <%= f.uploaded %>
+      <h3><a href="/file/<%=f.id%>"><%=f.name%></a></h3>
+      <%=f.uploaded%>
     </div>
   <% }) %>
 <% } else { %>
