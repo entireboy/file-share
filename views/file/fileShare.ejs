@@ -3,28 +3,29 @@
 <head>
   <title><%= title.page %></title>
   <link href="/css/bootstrap.min.css" rel="stylesheet" media="screen">
-  <link href="/css/bootstrap-responsive.min.css" rel="stylesheet" media="screen">
   <link href="/css/font-awesome.min.css" rel="stylesheet" media="screen">
   <link href="/css/style.css" rel="stylesheet" />
 </head>
 <body>
   <% include ../common/menu %>
   <div class="container">
-    <div class="row-fluid">
-      <div class="span10 offset1">
+    <div class="row">
+      <div class="col-sm-10 col-sm-offset-1">
         <div class="row">
           <h2>Share file '<a href="/file/<%= file.id %>/info"><%= file.name %></a>'</h2>
         </div>
-        <div class="row">
-          <div class="span6">
+        <div class="row fileShare">
+          <div class="col-sm-6">
             <div class="row">
               <h2>Viewable</h2>
             </div>
             <div class="row">
-              <label>User to share with edit permission</label>
-              <div class="input-append">
-                <input type="text" size="40" />
-                <button class="btn">추가 <i class="icon-plus"></i></button>
+              <label>User to share with</label>
+              <div class="input-group">
+                <input type="text" class="form-control" />
+                <span class="input-group-btn">
+                 <button class="btn btn-default">add <i class="icon-plus"></i></button>
+                </span>
               </div>
             </div>
             <div class="row">
