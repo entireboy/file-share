@@ -54,7 +54,9 @@ exports.upload = {};
  */
 exports.upload.page = function(req, res) {
   res.render('file/fileUpload', {
-    title: 'Upload file'
+    title: {
+      page: 'Upload file'
+    }
   });
 };
 
