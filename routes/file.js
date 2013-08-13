@@ -276,11 +276,9 @@ exports.list.ofUser.owns = function(req, res) {
         title: {
           page: 'Own file list of ' + userId
           , fileList: 'Own Files'
-        }
-        , user: {
+        }, user: {
           id: userId
-        }
-        , file: file
+        }, file: file
         , page: {
           path: req.path
         }
@@ -340,11 +338,9 @@ exports.list.ofUser.views = function(req, res) {
         title: {
           page: 'Shared file list (viewable) of ' + userId
           , fileList: 'Shared Files (Viewable)'
-        }
-        , user: {
+        }, user: {
           id: userId
-        }
-        , file: file
+        }, file: file
         , page: {
           path: req.path
         }

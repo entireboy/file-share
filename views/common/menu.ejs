@@ -1,30 +1,29 @@
 <div class="gnb navbar navbar-fixed-top">
-  <div class="navbar-inner">
-    <div class="container">
-      <ul class="nav">
-        <li><a href="" title="Home">HOME</a></li>
-        <li class="divider-vertical"></li>
+  <div class="container">
+    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".gnb-responsive-collapse">
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </button>
+
+    <% if(whoami) { %>
+      <a href="/user/<%=whoami.id%>" title="Home" class="navbar-brand">HOME</a>
+    <% } else { %>
+      <a href="" title="Home" class="navbar-brand">HOME</a>
+    <% } %>
+
+    <div class="nav-collapse collapse gnb-responsive-collapse">
+      <ul class="nav navbar-nav">
         <li><a href="/owns">Owns</a></li>
         <li><a href="/views">Views</a></li>
       </ul>
-      <ul class="nav pull-right">
+      <ul class="nav navbar-nav pull-right">
         <% if(whoami) { %>
-          <li>
-            <div class="btn-group whoami">
-              <a class="btn" href="/user/<%=whoami.id%>"><i class="icon-user"></i> <%=whoami.name%></a>
-              <a class="btn dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></a>
-              <ul class="dropdown-menu">
-                <li><a href="#"><i class="i"></i>...</a></li>
-                <li class="divider"></li>
-                <li><a href="/logout"><i class="i"></i>Logout</a></li>
-              </ul>
-            </div>
-          </li>
-          <li><div><a href="/file/upload" class="btn"><i class="icon-plus"></i></a></div></li>
+          <li><a href="/logout">Logout</a></li>
+          <li><a href="/file/upload">Upload</a></li>
         <% } else { %>
           <li><a href="/signup">Sign up</a></li>
-          <li class="divider-vertical"></li>
-          <li><a href="<%= loginUrl %>">Login</a></li>
+          <li><a href="<%=loginUrl%>">Login</a></li>
         <% } %>
       </ul>
     </div>
@@ -33,4 +32,4 @@
 
 
 <script src="http://code.jquery.com/jquery.min.js"></script>
-<script src="/js/bootstrap-dropdown.js"></script>
+<script src="/js/bootstrap.min.js"></script>
